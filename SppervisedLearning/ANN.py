@@ -1,125 +1,55 @@
-import matplotlib.pyplot as plt
-from sklearn import tree
-import numpy as np
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.model_selection import cross_validate, StratifiedKFold
+
+from sklearn import neural_network
 
 
-class ANNClassifier():
-    def __init__(self, model_params, feature_cols, categorical_cols=None, zero_impute_cols=None,
-                 neg_impute_cols=None):
-        self.feature_cols = feature_cols
-        self.model_params = model_params
-        self.categorical_cols = categorical_cols
-        self.zero_impute_cols = zero_impute_cols
-        self.neg_impute_cols = neg_impute_cols
-        self.pipeline = self._create_pipeline()
-
-    def _create_pipeline(self):
-        model = self._create_model()
-        preprocessing_steps = []
-        if self.categorical_cols is not None:
-            preprocessing_steps.append(self._create_OHE_step())
-        if self.zero_impute_cols is not None:
-            preprocessing_steps.append(self._create_zero_impute_step())
-        if self.neg_impute_cols is not None:
-            preprocessing_steps.append(self._create_neg_impute_step())
-        preprocessor = self._create_column_transformer(preprocessing_steps)
-        return Pipeline([("preprocessor", preprocessor), ("model", model)])
-
-    def _create_model(self):
-        return tree.DecisionTreeClassifier(
-            use_label_encoder=False,
-            tree_method="hist",
-            **self.model_params,
+class ANNLearner():
+    def __init__(self,
+                 hidden_layer_sizes=(100,),
+                 activation="relu",
+                 solver='adam',
+                 alpha=0.0001,
+                 batch_size='auto',
+                 learning_rate="constant",
+                 learning_rate_init=0.001,
+                 power_t=0.5,
+                 max_iter=200,
+                 shuffle=True,
+                 random_state=None,
+                 tol=1e-4,
+                 verbose=False,
+                 warm_start=False,
+                 momentum=0.9,
+                 nesterovs_momentum=True,
+                 early_stopping=False,
+                 validation_fraction=0.1,
+                 beta_1=0.9,
+                 beta_2=0.999,
+                 epsilon=1e-8,
+                 ):
+        super().__init__(verbose)
+        self._learner = neural_network.MLPClassifier(
+            hidden_layer_sizes=hidden_layer_sizes,
+            activation=activation,
+            solver=solver,
+            alpha=alpha,
+            batch_size=batch_size,
+            learning_rate=learning_rate,
+            learning_rate_init=learning_rate_init,
+            power_t=power_t,
+            max_iter=max_iter,
+            shuffle=shuffle,
+            random_state=random_state,
+            tol=tol,
+            verbose=verbose,
+            warm_start=warm_start,
+            momentum=momentum,
+            nesterovs_momentum=nesterovs_momentum,
+            early_stopping=early_stopping,
+            validation_fraction=validation_fraction,
+            beta_1=beta_1,
+            beta_2=beta_2,
+            epsilon=epsilon
         )
 
-    def _create_OHE_step(self):
-        ohe = OneHotEncoder(handle_unknown="ignore")
-        return ("categorical", ohe, self.categorical_cols)
-
-    def _create_neg_impute_step(self):
-        impute = SimpleImputer(strategy="constant", fill_value=-999)
-        return ("neg_impute", impute, self.neg_impute_cols)
-
-    def _create_zero_impute_step(self):
-        impute = SimpleImputer(strategy="constant", fill_value=0)
-        return ("zero_impute", impute, self.zero_impute_cols)
-
-    def _create_column_transformer(self, steps):
-        return ColumnTransformer(
-            transformers=steps,
-            remainder="passthrough",
-        )
-
-    def predict(self, df):
-        # return self.pipeline.predict_proba(df[self.feature_cols])
-        pred = self.pipeline.predict(df[self.feature_cols])
-
-        df["pred"] = pred
-        return df
-
-def _get_target_column():
-    return "target"
-
-
-
-def _get_zero_impute_columns(feature_columns):
-    return [c for c in feature_columns if "mach_inv_amt" in c or "pct" in c or "cnt" in c]
-
-
-def _get_neg_impute_columns(feature_columns):
-    return [c for c in feature_columns if "mach_age" in c or "days_" in c]
-
-
-def _split_data(df, feature_columns, target_column):
-    return df[feature_columns], df[target_column]
-
-
-def _get_metrics(cv_results):
-    return {'mean_' + k: np.mean(v) for k, v in cv_results.items() if k not in ["fit_time", "score_time"]}
-
-
-def _get_feature_importance_plot(clg_classifier, n_features=10):
-    clg_classifier.pipeline["model"].get_booster().feature_names = list(
-        clg_classifier.pipeline["preprocessor"].get_feature_names_out())
-    fig, ax = plt.subplots(1, 1, figsize=(10, 10))
-    feature_importances_plot = tree.plot_importance(clg_classifier.pipeline["model"].get_booster(),
-                                                   max_num_features=n_features, ax=ax).get_figure()
-    feature_importances_plot.tight_layout()
-    plt.show()
-
-
-def train_model(df ,target_column,feature_columns,categorical_cols,zero_impute_cols,neg_impute_cols,
-        model_params={"max_depth": 10, "learning_rate": .06, "scale_pos_weight": 2.8},
-):
-
-        # create custom model instance
-    classifier = DTClassifier(
-        model_params=model_params,
-        feature_cols=feature_columns,
-        categorical_cols=categorical_cols,
-        zero_impute_cols=zero_impute_cols,
-        neg_impute_cols=neg_impute_cols,
-    )
-
-    X, y = _split_data(df, feature_columns, target_column)
-
-    n_folds = 5
-    skf = StratifiedKFold(n_splits=n_folds, shuffle=True)
-    cv_results = cross_validate(
-        estimator=classifier.pipeline,
-        X=X,
-        y=y,
-        cv=skf,
-        scoring=["accuracy", "f1", "precision", "recall", "roc_auc"],
-    )
-    metrics = _get_metrics(cv_results)
-
-        # final refit on entire training set
-    classifier.pipeline.fit(X, y)
-        # feature importance
-    _get_feature_importance_plot(classifier)
+    def learner(self):
+        return self._learner

@@ -124,12 +124,12 @@
 
 from sklearn.tree import DecisionTreeClassifier
 
-class DTLearner():
+
+class DTLearner(object):
     def __init__(self,
                  criterion="gini", splitter="best", max_depth=None, min_samples_split=2, min_samples_leaf=1,
                  min_weight_fraction_leaf=0, max_features=None, random_state=None, max_leaf_nodes=None,
-                 min_impurity_decrease=0, class_weight=None, ccp_alpha=0, verbose=False):
-        super().__init__(verbose)
+                 min_impurity_decrease=0, class_weight=None, ccp_alpha=0, verbose=True):
         self._learner = DecisionTreeClassifier(criterion=criterion, splitter=splitter, max_depth=max_depth,
                                                min_samples_split=min_samples_split, min_samples_leaf=min_samples_leaf,
                                                min_weight_fraction_leaf=min_weight_fraction_leaf,

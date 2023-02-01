@@ -14,27 +14,27 @@ from sklearn import neural_network
 
 from sklearn.datasets import make_classification
 
-x_train, y_train = make_classification(n_samples=8113, n_features=10, random_state=42)
+x_train, y_train = make_classification(n_samples=6000, n_features=22, random_state=42)
 # x_train, x_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
 # def prepare_data(dataset_name):
-# dataset = pd.read_csv(f'../Data/mushrooms.csv')
-# y_train = dataset['class']
-# x_train = dataset.drop(labels=['class'], axis=1)
-#
-# le = LabelEncoder()
-#
-# cols = x_train.columns.values
-# for col in cols:
-#     x_train[col] = le.fit_transform(x_train[col])
-#
-# y_train = le.fit_transform(y_train)
-#
-# ohe = OneHotEncoder()
-# x_train = ohe.fit_transform(x_train).toarray()
-# sc = StandardScaler()
-# x_train = sc.fit_transform(x_train)
-#
+dataset = pd.read_csv(f'../Data/mushrooms.csv')
+y_train = dataset['class']
+x_train = dataset.drop(labels=['class'], axis=1)
+
+le = LabelEncoder()
+
+cols = x_train.columns.values
+for col in cols:
+    x_train[col] = le.fit_transform(x_train[col])
+
+y_train = le.fit_transform(y_train)
+
+ohe = OneHotEncoder()
+x_train = ohe.fit_transform(x_train).toarray()
+sc = StandardScaler()
+x_train = sc.fit_transform(x_train)
+
 # x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.30, random_state=42)
 # x_valid, x_test, y_valid, y_test = train_test_split(x_test, y_test, test_size=0.50, random_state=42)
 
@@ -130,11 +130,12 @@ def create_learning_curve(models,metric):
         ax[ax_idx].legend(handles[:2], ["Training Score", "Test Score"])
         ax[ax_idx].set_title(f"Learning Curve for {estimator.__class__.__name__}")
     plt.show()
-
+#
 if __name__=="__main__":
-    #Decision Tree
 
-#find alpha
+    #     #Decision Tree
+#
+# #find alpha
 #     clf = DecisionTreeClassifier(random_state=0)
 #     path = clf.cost_complexity_pruning_path(x_train, y_train)
 #     ccp_alphas, impurities = path.ccp_alphas, path.impurities
@@ -169,9 +170,11 @@ if __name__=="__main__":
 #     ax[1].set_ylabel("depth of tree")
 #     ax[1].set_title("Depth vs alpha")
 #     fig.tight_layout()
+#     x_train2, x_test2, y_train2, y_test2 = train_test_split(x_train, y_train, test_size=0.30, random_state=42)
 #
-#     train_scores = [clf.score(x_train, y_train) for clf in clfs]
-#     test_scores = [clf.score(x_test, y_test) for clf in clfs]
+#     train_scores = [clf.score(x_train2, y_train2) for clf in clfs]
+#
+#     test_scores = [clf.score(x_test2, y_test2) for clf in clfs]
 #
 #     fig, ax = plt.subplots()
 #     ax.set_xlabel("alpha")
@@ -181,38 +184,148 @@ if __name__=="__main__":
 #     ax.plot(ccp_alphas, test_scores, marker="o", label="test", drawstyle="steps-post")
 #     ax.legend()
 #     plt.show()
-#
-#
-# #grid search
-#
-#     metric="accuracy"
+# #
+# #
+# # #grid search
+# #
+    metric="accuracy"
 #     modelDT=DecisionTreeClassifier(random_state=0,ccp_alpha=.003)
-#     parameters = {'max_depth': np.arange(1, 40, 1), 'criterion': ('gini', 'entropy', 'log_loss'),
-#                   'max_leaf_nodes': np.arange(2, 40, 1)} #, 'ccp_alpha': np.arange(0, .05, 0.01).tolist()
-#     best_parm = grid_search(parameters, scoring=metric, refit=metric, model=modelDT)
+#     # parameters = {'max_depth': np.arange(1, 40, 1), 'criterion': ('gini', 'entropy', 'log_loss'),
+#     #               'max_leaf_nodes': np.arange(2, 40, 1)} #, 'ccp_alpha': np.arange(0, .05, 0.01).tolist()
+#     # best_parm = grid_search(parameters, scoring=metric, refit=metric, model=modelDT)
 #
-#     prepare_val_curve('max_depth',np.arange(1,40,1),metric,"DTClassifier")
-#     prepare_val_curve('max_leaf_nodes', np.arange(1, 40, 1), metric, "DTClassifier")
-#
-#
+#     prepare_val_curve(modelDT,'max_depth',np.arange(1,40,1),metric,"DTClassifier")
+#     prepare_val_curve(modelDT, 'max_leaf_nodes', np.arange(1, 40, 1), metric, "DTClassifier")
 #
 #
 #
-#     modelDT=DecisionTreeClassifier(random_state=0,max_depth=5, max_leaf_nodes=10)
+#
+#
+#     modelDT=DecisionTreeClassifier(random_state=0,max_depth=3, max_leaf_nodes=7,ccp_alpha=.003)
 #     create_learning_curve([modelDT], metric)
-    #ANN
-    metric = "accuracy"
-    modelNN=neural_network.MLPClassifier(random_state=0,hidden_layer_sizes = (100,100,),max_iter=3000)
-    modelNN.fit(x_train,y_train)
-    parameters={
-    #'hidden_layer_sizes': [(50,50,50), (50,100,50), (100,)],
-    # 'solver': ['sgd', 'adam'],
-    'alpha': [0.0001, 0.05],
-    'learning_rate': ['constant','adaptive'],}
+#     #ANN
+#     metric = "accuracy"
+#     modelNN=neural_network.MLPClassifier(random_state=0,hidden_layer_sizes = (10,10),early_stopping=True)
+#     parameters={
+#     #'hidden_layer_sizes': [(50,50,50), (50,100,50), (100,)],
+#     # 'solver': ['sgd', 'adam'],
+#     'alpha': [0.0001, 0.05],
+#     'learning_rate': ['constant','adaptive'],}
+#
+#     # grid_search(parameters,metric,metric,modelNN)
+#     # print(modelNN.best_validation_score_)
+#     # print(modelNN.loss_curve_)
+#     # print(modelNN.validation_scores_)
+#     prepare_val_curve(modelNN, 'learning_rate_init', param_range=[.001,.002,.004,.005,.006,.01,.05,.1,.2],scoring=metric,algorithm_name="MLPClassifier")
+#
+#     prepare_val_curve(modelNN, 'hidden_layer_sizes', param_range=[1,2,3,4,5,6,7,9,10,15,20,30],scoring=metric,algorithm_name="MLPClassifier")
+#     # prepare_val_curve(modelNN, 'max_iter', param_range=[400,500,1000,2000,3000],scoring=metric,algorithm_name="MLPClassifier")
 
-    # grid_search(parameters,metric,metric,modelNN)
+    # modelNN=neural_network.MLPClassifier(hidden_layer_sizes=(3,3,),early_stopping=True,learning_rate_init=.01,random_state=0)
+    # # create_learning_curve([modelDT,modelNN],metric)
+    # modelNN.fit(x_train,y_train)
+    # print(modelNN.loss_curve_)
+    # plt.plot(modelNN.loss_curve_)
+    # plt.show()
+    # plt.plot(modelNN.validation_scores_)
+    # print(len(modelNN.validation_scores_))
+    # plt.show()
+    # #
 
-    prepare_val_curve(modelNN, 'learning_rate_init', param_range=[100,100],scoring=metric,algorithm_name="MLPClassifier")
+#MLPClassifier
+    #Reference https://github.com/bnsreenu/python_for_microscopists/blob/master/154_understanding_train_validation_loss_curves.py
+    # X_train, X_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2, random_state=42)
+
+    from keras.models import Sequential
+    from keras.layers import Dense, Activation, Dropout
+    import seaborn as sns
+    from tensorflow import keras
+
+    #complex model
+
+    # model = Sequential()
+    # model.add(Dense(16, input_dim=117, activation='relu'))
+    # model.add(Dense(16))
+    # model.add(Activation('relu'))
+    # model.add(Dense(1))
+    # model.add(Activation('sigmoid'))
+    # model.compile(loss='binary_crossentropy',
+    #               optimizer='adam',             #also try adam
+    #               metrics=['accuracy'])
+    #
+    # print(model.summary())
+    # history = model.fit(X_train, y_train, verbose=1, epochs=500, batch_size=32,
+    #                     validation_data=(X_test, y_test))
+
+
+    #simple model
+#make sure to mention bath size, layers, nerons, learning rate, epochs
+    # model = Sequential()
+    # model.add(Dense(2,input_dim=117, activation='relu'))
+    # # model.add(Dropout(0.2))
+    # model.add(Dense(1))
+    # model.add(Activation('sigmoid'))
+    # # opt = keras.optimizers.Adam(learning_rate=0.001)
+    # model.compile(loss='binary_crossentropy',
+    #               optimizer='adam',  # also try adam
+    #               metrics=['accuracy'])
+    #
+    # print(model.summary())
+    #
+    # history = model.fit(X_train, y_train, verbose=1, epochs=50, batch_size=32,
+    #                     validation_data=(X_test, y_test))
+    #
+    # _, acc = model.evaluate(X_test, y_test)
+    # print("Accuracy = ", (acc * 100.0), "%")
 
 
 
+
+#plot the training and validation accuracy and loss at each epoch
+    #simple model
+
+    # loss = history.history['loss']
+    # val_loss = history.history['val_loss']
+    # epochs = range(1, len(loss) + 1)
+    # plt.plot(epochs, loss, 'y', label='Training loss')
+    # plt.plot(epochs, val_loss, 'r', label='Validation loss')
+    # plt.title('Training and validation loss')
+    # plt.xlabel('Epochs')
+    # plt.ylabel('Loss')
+    # plt.legend()
+    # plt.show()
+    #
+    #
+    # acc = history.history['accuracy']
+    # val_acc = history.history['val_accuracy']
+    # plt.plot(epochs, acc, 'y', label='Training acc')
+    # plt.plot(epochs, val_acc, 'r', label='Validation acc')
+    # plt.title('Training and validation accuracy')
+    # plt.xlabel('Epochs')
+    # plt.ylabel('Accuracy')
+    # plt.legend()
+    # plt.show()
+
+    # Predicting the Test set results
+    # y_pred = model.predict(X_test)
+    # y_pred = (y_pred > 0.5)
+    #
+    # # Making the Confusion Matrix
+    # from sklearn.metrics import confusion_matrix
+    #
+    # cm = confusion_matrix(y_test, y_pred)
+    #
+    # sns.heatmap(cm, annot=True)
+    # plt.show()
+
+    # KNN
+    from sklearn.neighbors import KNeighborsClassifier
+    neigh = KNeighborsClassifier()
+
+    parameters = {'n_neighbors': np.arange(2, 15, 1),
+                      'leaf_size': np.arange(1, 15, 1), 'weights':['uniform', 'distance']}
+    best_parm = grid_search(parameters, scoring=metric, refit=metric, model=neigh)
+    neigh = KNeighborsClassifier(leaf_size=1,n_neighbors=2)
+
+    prepare_val_curve(neigh,"n_neighbors",np.arange(2,15,1),metric,"KNN")
+    create_learning_curve([neigh],metric)

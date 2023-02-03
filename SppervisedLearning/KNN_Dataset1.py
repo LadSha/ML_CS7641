@@ -40,7 +40,7 @@ def KNN_experiment():
     #
     # # best_parm = grid_search(parameters, scoring=metric, refit=metric, model=neigh)
     #
-    k=13
+    k=11
     for distance_metric in ['manhattan', 'cosine', 'minkowski', 'euclidean']:
         neigh = KNeighborsClassifier(n_neighbors=k, metric=distance_metric,)
         prepare_val_curve(neigh, "n_neighbors", np.arange(1, 65, 2), metric, f"KNN-{distance_metric}")
@@ -152,3 +152,5 @@ def KNN_experiment():
 
 if __name__ == "__main__":
     KNN_experiment()
+    neigh = KNeighborsClassifier(n_neighbors=13, metric='minkowski', weights='distance')
+

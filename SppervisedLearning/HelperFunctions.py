@@ -57,7 +57,7 @@ def prepare_val_curve(model,param_name,param_range,scoring, algorithm_name):
     plt.legend(loc="best")
     plt.show()
 
-def create_learning_curve(estimator,metric):
+def create_learning_curve(estimator,metric,title):
 
 #reference: https://scikit-learn.org/
     fig, ax = plt.subplots()
@@ -79,5 +79,13 @@ def create_learning_curve(estimator,metric):
     LearningCurveDisplay.from_estimator(estimator, **common_params, ax=ax)
     handles, label = ax.get_legend_handles_labels()
     ax.legend(handles[:2], ["Training Score", "Test Score"])
-    ax.set_title(f"Learning Curve for {estimator.__class__.__name__}")
+    ax.set_title(f"Learning Curve for {estimator.__class__.__name__} {title}")
     plt.show()
+
+def grid_search(parameters, scoring, refit, model):
+
+
+    clf = GridSearchCV(model, parameters,scoring=scoring, refit=refit, error_score='raise')
+    clf.fit(x_train,y_train)
+    print(clf.best_params_)
+    return(clf.best_params_.values)

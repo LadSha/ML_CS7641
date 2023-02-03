@@ -11,7 +11,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import LearningCurveDisplay, ShuffleSplit
 from sklearn.model_selection import learning_curve
 from sklearn import neural_network
-
+import time
+from sklearn.svm import SVC
 from sklearn.datasets import make_classification
 
 x_train, y_train = make_classification(n_samples=6000, n_features=22, random_state=42)
@@ -259,7 +260,8 @@ if __name__=="__main__":
 
 
     #simple model
-#make sure to mention bath size, layers, nerons, learning rate, epochs
+#make sure to mention batch size, layers, nerons, learning rate , epochs
+
     # model = Sequential()
     # model.add(Dense(2,input_dim=117, activation='relu'))
     # # model.add(Dropout(0.2))
@@ -318,14 +320,10 @@ if __name__=="__main__":
     # sns.heatmap(cm, annot=True)
     # plt.show()
 
-    # KNN
-    from sklearn.neighbors import KNeighborsClassifier
-    neigh = KNeighborsClassifier()
 
-    parameters = {'n_neighbors': np.arange(2, 15, 1),
-                      'leaf_size': np.arange(1, 15, 1), 'weights':['uniform', 'distance']}
-    best_parm = grid_search(parameters, scoring=metric, refit=metric, model=neigh)
-    neigh = KNeighborsClassifier(leaf_size=1,n_neighbors=2)
+    #SVC
+    svc = SVC(kernel="rbf", gamma=0.001)
 
-    prepare_val_curve(neigh,"n_neighbors",np.arange(2,15,1),metric,"KNN")
-    create_learning_curve([neigh],metric)
+
+
+

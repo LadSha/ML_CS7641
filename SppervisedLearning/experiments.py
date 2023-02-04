@@ -1,7 +1,6 @@
 import DT
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder,LabelEncoder, StandardScaler
-from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_validate, StratifiedKFold
 import numpy as np
@@ -15,7 +14,7 @@ import time
 from sklearn.svm import SVC
 from sklearn.datasets import make_classification
 
-x_train, y_train = make_classification(n_samples=6000, n_features=22, random_state=42)
+# x_train, y_train = make_classification(n_samples=6000, n_features=22, random_state=42)
 # x_train, x_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
 # def prepare_data(dataset_name):

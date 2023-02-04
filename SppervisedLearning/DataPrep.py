@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder,LabelEncoder, StandardScaler
-
+from sklearn.model_selection import train_test_split
 
 def get_data():
     dataset = pd.read_csv(f'../Data/mushrooms.csv')
@@ -19,6 +19,7 @@ def get_data():
     x_train = ohe.fit_transform(x_train).toarray()
     sc = StandardScaler()
     x_train = sc.fit_transform(x_train)
+    x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2, random_state=42)
 
-    return x_train,y_train
+    return x_train,y_train, x_test, y_test
 

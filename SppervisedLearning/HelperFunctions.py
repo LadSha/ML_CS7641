@@ -11,7 +11,7 @@ from sklearn.svm import SVC
 from sklearn.datasets import make_classification
 from DataPrep import get_data
 
-x_train, y_train = get_data()
+x_train, y_train, x_test, y_test = get_data()
 def prepare_val_curve(model,param_name,param_range,scoring, algorithm_name):
 
     train_scores, test_scores = validation_curve(

@@ -34,8 +34,8 @@ def SVM_experiment():
                                     scoring=["accuracy", "f1", "precision", "recall", "roc_auc"])
         metrics = {'mean_' + k: np.mean(v) for k, v in cv_results.items()}  # if k not in ["fit_time", "score_time"]
         print(metrics)
-        result.append([kernel, 0.001, metrics["mean_test_accuracy"], metrics["mean_fit_time"], metrics["mean_score_time"]])
-    pd_result = pd.DataFrame(result, columns=["kernel","tolerance", "accuracy", "fit_time", "score_time"])
+        result.append([kernel, 0.001, metrics["mean_test_accuracy"],metrics["mean_test_f1"], metrics["mean_fit_time"], metrics["mean_score_time"]])
+    pd_result = pd.DataFrame(result, columns=["kernel","tolerance", "accuracy","f1", "fit_time", "score_time"])
     display(pd_result)
 
     for kernel in [ 'linear', 'poly', 'rbf','sigmoid']:#'
@@ -44,13 +44,10 @@ def SVM_experiment():
                                     scoring=["accuracy", "f1", "precision", "recall", "roc_auc"])
         metrics = {'mean_' + k: np.mean(v) for k, v in cv_results.items() } #if k not in ["fit_time", "score_time"]
         print(metrics)
-        result.append([kernel,0.1,metrics["mean_test_accuracy"],metrics["mean_fit_time"], metrics["mean_score_time"]])
-    pd_result= pd.DataFrame(result,columns= ["kernel","tolerance", "accuracy", "fit_time","score_time"])
+        result.append([kernel,0.1,metrics["mean_test_accuracy"],metrics["mean_test_f1"],metrics["mean_fit_time"], metrics["mean_score_time"]])
+    pd_result= pd.DataFrame(result,columns= ["kernel","tolerance", "accuracy","f1", "fit_time","score_time"])
     display(pd_result)
 
-
-        # create_learning_curve(model,metric,f'tol=.1 kernel={kernel}')
-        # result.append([kernel, scores.mean()])
 
     for kernel in ['linear', 'poly', 'rbf', 'sigmoid']:
         model=SVC(random_state=42, kernel= kernel, gamma=.008)

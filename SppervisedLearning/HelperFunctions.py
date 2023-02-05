@@ -11,8 +11,8 @@ from sklearn.svm import SVC
 from sklearn.datasets import make_classification
 from DataPrep import get_data
 
-x_train, y_train, x_test, y_test = get_data()
-def prepare_val_curve(model,param_name,param_range,scoring, algorithm_name):
+def prepare_val_curve(model,param_name,param_range,scoring, algorithm_name,x_train,y_train):
+    # reference: https://scikit-learn.org/
 
     train_scores, test_scores = validation_curve(
         model,
@@ -21,7 +21,7 @@ def prepare_val_curve(model,param_name,param_range,scoring, algorithm_name):
         param_name=param_name,
         param_range=param_range,
         scoring=scoring,
-        cv=5
+        cv=ShuffleSplit(n_splits=50, test_size=0.2, random_state=0)
     )
     train_scores_mean = np.mean(train_scores, axis=1)
     train_scores_std = np.std(train_scores, axis=1)
@@ -58,7 +58,7 @@ def prepare_val_curve(model,param_name,param_range,scoring, algorithm_name):
     plt.legend(loc="best")
     plt.show()
 
-def create_learning_curve(estimator,metric,title):
+def create_learning_curve(estimator,metric,title,x_train,y_train):
 
 #reference: https://scikit-learn.org/
     fig, ax = plt.subplots()
@@ -66,7 +66,7 @@ def create_learning_curve(estimator,metric,title):
     common_params = {
         "X": x_train,
         "y": y_train,
-        "train_sizes": np.arange(1,n,500),
+        "train_sizes": np.arange(1,n,200),
         "cv": ShuffleSplit(n_splits=50, test_size=0.2, random_state=0),
         "score_type": "both",
         "n_jobs": 4,
@@ -76,14 +76,13 @@ def create_learning_curve(estimator,metric,title):
     }
 
 
-    train_sizes, train_scores, valid_scores = learning_curve(estimator, x_train, y_train, cv=5, shuffle=True)
     LearningCurveDisplay.from_estimator(estimator, **common_params, ax=ax)
     handles, label = ax.get_legend_handles_labels()
     ax.legend(handles[:2], ["Training Score", "Test Score"])
     ax.set_title(f"Learning Curve for {estimator.__class__.__name__} {title}")
     plt.show()
 
-def grid_search(parameters, scoring, refit, model):
+def grid_search(parameters, scoring, refit, model,x_train,y_train):
 
 
     clf = GridSearchCV(model, parameters,scoring=scoring, refit=refit, error_score='raise')

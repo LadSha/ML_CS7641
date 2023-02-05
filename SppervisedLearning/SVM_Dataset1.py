@@ -22,7 +22,7 @@ def SVM_experiment():
     parameters=[['gamma',[.0001, 0.001, .003,.006,.008, 0.01, 1]]] #],
 
     for param, param_range in parameters:
-        prepare_val_curve(svc,param,param_range, metric,f"SVM")
+        prepare_val_curve(svc,param,param_range, metric,f"SVM",x_train,y_train)
 
     n_folds = 5
     skf = StratifiedKFold(n_splits=n_folds, shuffle=True)

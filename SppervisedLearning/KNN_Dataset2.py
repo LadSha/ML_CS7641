@@ -43,7 +43,7 @@ def KNN_experiment():
     # # best_parm = grid_search(parameters, scoring=metric, refit=metric, model=neigh)
     #
     model = KNeighborsClassifier(weights='distance')#metric='minkowski',weights='distance'
-    prepare_val_curve(model,"n_neighbors",[30,50,100,150,175,200,300],metric,"KNN")
+    prepare_val_curve(model,"n_neighbors",[30,50,100,150,175,200,300],metric,"KNN",x_train,y_train)
     n_folds = 5
     skf = StratifiedKFold(n_splits=n_folds, shuffle=True)
 

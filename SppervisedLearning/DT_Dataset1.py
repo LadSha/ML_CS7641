@@ -10,15 +10,17 @@ metric = 'accuracy'
 
 def DT_experiement():
     modelDT=DecisionTreeClassifier(random_state=0)
-    find_alph()
-    GrSearch()
+    # find_alph()
+    # GrSearch()
 
     prepare_val_curve(modelDT,'max_depth',np.arange(1,40,1),metric,"DTClassifier",x_train,y_train)
     prepare_val_curve(modelDT, 'max_leaf_nodes', np.arange(1, 40, 1), metric, "DTClassifier",x_train,y_train)
 
     # modelDT=DecisionTreeClassifier(random_state=0,max_depth=3, max_leaf_nodes=7,ccp_alpha=.003)
-    create_learning_curve([modelDT], metric)
+    create_learning_curve(modelDT,metric,"DT-default",x_train,y_train)
 
+    modelDT = DecisionTreeClassifier(random_state=0,max_depth=15, max_leaf_nodes=15)
+    create_learning_curve(modelDT,metric,"DT-default",x_train,y_train)
 
 # #find alpha
 def find_alph():

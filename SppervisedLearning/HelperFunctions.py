@@ -21,7 +21,7 @@ def prepare_val_curve(model,param_name,param_range,scoring, algorithm_name,x_tra
         param_name=param_name,
         param_range=param_range,
         scoring=scoring,
-        cv=20
+        cv=5
     )
     train_scores_mean = np.mean(train_scores, axis=1)
     train_scores_std = np.std(train_scores, axis=1)

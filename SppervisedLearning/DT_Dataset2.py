@@ -19,7 +19,7 @@ def DT_experiement():
 
     modelDT=DecisionTreeClassifier(random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
 
-    create_learning_curve(modelDT, metric, "DT-tuned", x_train, y_train)
+    create_learning_curve(modelDT, metric, "DT-maxDepth=4 leaf_nodes=10", x_train, y_train)
     find_alph( modelDT)
     modelDT=DecisionTreeClassifier(random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
     create_learning_curve(modelDT, metric, "DT-tuned-postPruned", x_train, y_train)
@@ -89,4 +89,5 @@ def GrSearch():
 
 if __name__=='__main__':
     DT_experiement()
+    modelDT=DecisionTreeClassifier(random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
 

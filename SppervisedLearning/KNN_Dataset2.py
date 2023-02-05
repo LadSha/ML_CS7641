@@ -5,12 +5,12 @@ from sklearn.model_selection import learning_curve
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_validate, StratifiedKFold
 from IPython.display import display
-from DataPrep import get_data
+from DataPrep2 import get_data
 from HelperFunctions import prepare_val_curve
 import pandas as pd
 
 x_train,y_train, x_test, y_test = get_data()
-metric = 'accuracy'
+metric = 'f1'
 
 
 def create_learning_curve(k, neigh, weights):
@@ -42,29 +42,29 @@ def KNN_experiment():
     #
     # # best_parm = grid_search(parameters, scoring=metric, refit=metric, model=neigh)
     #
-    model = KNeighborsClassifier()#metric='minkowski',weights='distance'
+    model = KNeighborsClassifier(weights='distance')#metric='minkowski',weights='distance'
     prepare_val_curve(model,"n_neighbors",[30,50,100,150,175,200,300],metric,"KNN")
     n_folds = 5
     skf = StratifiedKFold(n_splits=n_folds, shuffle=True)
 
     k=30
     result=[]
-    columns=["k", "distance_metric", "test_accuracy", "train_accuracy", "fit_time",
+    columns=["k", "distance_metric", f"test_{metric}", f"train_{metric}", "fit_time",
                                               "score_time"]
     for distance_metric in ['manhattan', 'cosine', 'minkowski', 'euclidean']:
-        model = KNeighborsClassifier(n_neighbors=k, metric=distance_metric,)
+        model = KNeighborsClassifier(n_neighbors=k, metric=distance_metric,weights='distance')
         cv_results = cross_validate(estimator=model, X=x_train, y=y_train, cv=skf, return_train_score=True,
-                                    scoring=["accuracy"])
+                                    scoring=[metric])
         metrics = {'mean_' + k: np.mean(v) for k, v in cv_results.items()}  # if k not in ["fit_time", "score_time"]
         print(metrics)
         result.append(
-            [k, distance_metric, metrics["mean_test_accuracy"], metrics["mean_train_accuracy"], metrics["mean_fit_time"],
+            [k, distance_metric, metrics[f"mean_test_{metric}"], metrics[f"mean_train_{metric}"], metrics["mean_fit_time"],
              metrics["mean_score_time"]])
     pd_result = pd.DataFrame(result, columns=columns)
     display(pd_result)
 
 
-    columns = ["k", "weights", "test_accuracy", "train_accuracy", "fit_time",
+    columns = ["k", "weights", f"test_{metric}", f"train_{metric}", "fit_time",
                "score_time"]
     parameters = [[30, 'uniform'], [30, 'distance']]
     result=[]
@@ -72,11 +72,11 @@ def KNN_experiment():
     for k, weights in parameters:
         model = KNeighborsClassifier(n_neighbors=k, weights=weights)
         cv_results = cross_validate(estimator=model, X=x_train, y=y_train, cv=skf, return_train_score=True,
-                                    scoring=["accuracy"])
+                                    scoring=[metric])
         metrics = {'mean_' + k: np.mean(v) for k, v in cv_results.items()}  # if k not in ["fit_time", "score_time"]
         print(metrics)
         result.append(
-            [k, weights, metrics["mean_test_accuracy"], metrics["mean_train_accuracy"], metrics["mean_fit_time"],
+            [k, weights, metrics[f"mean_test_{metric}"], metrics[f"mean_train_{metric}"], metrics["mean_fit_time"],
              metrics["mean_score_time"]])
     pd_result = pd.DataFrame(result, columns=columns)
     display(pd_result)
@@ -178,7 +178,7 @@ def KNN_experiment():
     ax.set_title(f"Learning Curve K={k}, weights=distance {neigh.__class__.__name__}")
     # plt.show()
 
-    k=70
+    k=200
     neigh = KNeighborsClassifier(n_neighbors=k,weights='distance',metric='euclidean')
 
 
@@ -232,5 +232,5 @@ def KNN_experiment():
 
 if __name__ == "__main__":
     KNN_experiment()
-    neigh = KNeighborsClassifier(n_neighbors=50, metric='euclidean', weights='distance')
+    neigh = KNeighborsClassifier(n_neighbors=50, metric='minkowski', weights='distance')
 

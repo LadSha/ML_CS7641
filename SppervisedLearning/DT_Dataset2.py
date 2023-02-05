@@ -1,12 +1,12 @@
 from sklearn.tree import DecisionTreeClassifier
 import matplotlib.pyplot as plt
-from DataPrep import get_data
+from DataPrep2 import get_data
 from sklearn.model_selection import train_test_split
 import numpy as np
 from HelperFunctions import grid_search, prepare_val_curve,create_learning_curve
 
 x_train,y_train, x_test, y_test = get_data()
-metric = 'accuracy'
+metric = 'f1'
 
 def DT_experiement():
     modelDT=DecisionTreeClassifier(random_state=0)

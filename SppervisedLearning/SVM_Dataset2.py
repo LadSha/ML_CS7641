@@ -21,12 +21,12 @@ metric = 'f1'
 def SVM_experiment():
     svc = SVC(random_state=42)
 
-    parameters=[['gamma',[ .006, 0.01,.05,.08, .1,.2,.3,.5,1,5]]] #],
+    parameters=[['gamma',[ .006, 0.01,.05,.08, .1,.2,.3,.5,1,5,10]]] #],
 
     for param, param_range in parameters:
         prepare_val_curve(svc,param,param_range, metric,f"SVM", x_train,y_train)
 
-    gamma=.1
+    gamma=5
     n_folds = 5
     skf = StratifiedKFold(n_splits=n_folds, shuffle=True)
     result=[]
@@ -41,15 +41,15 @@ def SVM_experiment():
     pd_result = pd.DataFrame(result, columns=["kernel","tolerance", f"test_{metric}",f"train_{metric}", "fit_time", "score_time"])
     display(pd_result)
 
-    for kernel in [ 'linear', 'poly', 'rbf','sigmoid']:#'
-        model=SVC(random_state=42, kernel= kernel, gamma=gamma,tol=.1)
-        cv_results = cross_validate(estimator=model, X=x_train, y=y_train, cv=skf, return_train_score=True,
-                                    scoring=[metric])
-        metrics = {'mean_' + k: np.mean(v) for k, v in cv_results.items() } #if k not in ["fit_time", "score_time"]
-        print(metrics)
-        result.append([kernel,0.1,metrics[f"mean_test_{metric}"],metrics[f"mean_train_{metric}"],metrics["mean_fit_time"], metrics["mean_score_time"]])
-    pd_result= pd.DataFrame(result,columns= ["kernel","tolerance", f"test_{metric}",f"train_{metric}", "fit_time","score_time"])
-    display(pd_result)
+    # for kernel in [ 'linear', 'poly', 'rbf','sigmoid']:#'
+    #     model=SVC(random_state=42, kernel= kernel, gamma=gamma,tol=.1)
+    #     cv_results = cross_validate(estimator=model, X=x_train, y=y_train, cv=skf, return_train_score=True,
+    #                                 scoring=[metric])
+    #     metrics = {'mean_' + k: np.mean(v) for k, v in cv_results.items() } #if k not in ["fit_time", "score_time"]
+    #     print(metrics)
+    #     result.append([kernel,0.1,metrics[f"mean_test_{metric}"],metrics[f"mean_train_{metric}"],metrics["mean_fit_time"], metrics["mean_score_time"]])
+    # pd_result= pd.DataFrame(result,columns= ["kernel","tolerance", f"test_{metric}",f"train_{metric}", "fit_time","score_time"])
+    # display(pd_result)
 
 
     for kernel in ['linear', 'poly', 'rbf', 'sigmoid']:
@@ -58,7 +58,7 @@ def SVM_experiment():
 
 
     for kernel in ['linear', 'poly', 'rbf', 'sigmoid']:
-        model=SVC(random_state=42, kernel= kernel, gamma=gamma, class_weight='balanced')
+        model=SVC(random_state=42, kernel= kernel, gamma=10)
         create_learning_curve(model,metric,f'balancedWeight, kernel={kernel}',x_train,y_train)
 
 

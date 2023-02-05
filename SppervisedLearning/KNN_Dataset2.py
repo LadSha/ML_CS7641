@@ -115,33 +115,9 @@ def KNN_experiment():
 
 
 
-# k = 30
-# neigh = KNeighborsClassifier(n_neighbors=k, weights='distance')
-#
-# prepare_val_curve(neigh, "n_neighbors", np.arange(1, 65, 2), metric, "KNN-minkowski")
-#
-# fig, ax = plt.subplots()
-# n = round(len(x_train) * .8)
-# common_params = {
-#     "X": x_train,
-#     "y": y_train,
-#     "train_sizes": np.arange(k, n - k, 500),
-#     "cv": ShuffleSplit(n_splits=50, test_size=0.2, random_state=0),
-#     "score_type": "both",
-#     "n_jobs": 4,
-#     "line_kw": {"marker": "o"},
-#     "std_display_style": "fill_between",
-#     "score_name": metric,
-# }
-#
-# train_sizes, train_scores, valid_scores = learning_curve(neigh, x_train, y_train, cv=5, shuffle=True)
-# LearningCurveDisplay.from_estimator(neigh, **common_params, ax=ax)
-# handles, label = ax.get_legend_handles_labels()
-# ax.legend(handles, ["Training Score", "Test Score"])
-# ax.set_title(f"Learning Curve K={k}, weights=distance {neigh.__class__.__name__}")
-# plt.show()
+
 
 if __name__ == "__main__":
     KNN_experiment()
-    neigh = KNeighborsClassifier(n_neighbors=10, metric='euclidean', weights='uniform')
+    neigh = KNeighborsClassifier(n_neighbors=50, metric='euclidean', weights='uniform')
 

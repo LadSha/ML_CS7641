@@ -51,12 +51,12 @@ def SVM_experiment():
 
     for kernel in ['linear', 'poly', 'rbf', 'sigmoid']:
         model=SVC(random_state=42, kernel= kernel, gamma=.008)
-        create_learning_curve(model,metric,f' kernel={kernel}')
+        create_learning_curve(model,metric,f' kernel={kernel}',x_train,y_train)
 
 
     for kernel in ['linear', 'poly', 'rbf', 'sigmoid']:
         model=SVC(random_state=42, kernel= kernel, gamma=.008, class_weight='balanced')
-        create_learning_curve(model,metric,f'balancedWeight, kernel={kernel}')
+        create_learning_curve(model,metric,f'balancedWeight, kernel={kernel}',x_train,y_train)
 
 
 

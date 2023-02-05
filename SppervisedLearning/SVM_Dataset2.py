@@ -21,12 +21,12 @@ metric = 'f1'
 def SVM_experiment():
     svc = SVC(random_state=42)
 
-    parameters=[['gamma',[ .0001,.001,.006, 0.01,.05,.08, .1,.2,.3,.5,1]]] #],
+    parameters=[['gamma',[ .006, 0.01,.05,.08, .1,.2,.3,.5,1,5]]] #],
 
     for param, param_range in parameters:
         prepare_val_curve(svc,param,param_range, metric,f"SVM", x_train,y_train)
 
-    gamma=.001
+    gamma=.1
     n_folds = 5
     skf = StratifiedKFold(n_splits=n_folds, shuffle=True)
     result=[]

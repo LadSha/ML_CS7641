@@ -6,8 +6,10 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_validate, StratifiedKFold
 from IPython.display import display
 from DataPrep2 import get_data
-from HelperFunctions import prepare_val_curve
+from HelperFunctions import prepare_val_curve,grid_search
 import pandas as pd
+from sklearn.model_selection import GridSearchCV
+
 
 x_train,y_train, x_test, y_test = get_data()
 metric = 'f1'
@@ -28,7 +30,6 @@ def create_learning_curve(k, neigh, weights):
         "score_name": metric,
     }
 
-    train_sizes, train_scores, valid_scores = learning_curve(neigh, x_train, y_train, cv=5, shuffle=True)
     LearningCurveDisplay.from_estimator(neigh, **common_params, ax=ax)
     handles, label = ax.get_legend_handles_labels()
     ax.legend(handles, ["Training Score", "Test Score"])
@@ -43,11 +44,15 @@ def KNN_experiment():
     # # best_parm = grid_search(parameters, scoring=metric, refit=metric, model=neigh)
     #
     model = KNeighborsClassifier(weights='distance')#metric='minkowski',weights='distance'
-    prepare_val_curve(model,"n_neighbors",[30,50,100,150,175,200,300],metric,"KNN",x_train,y_train)
+    prepare_val_curve(model,"n_neighbors",[2,5,8,9,10,11,12,15,17,20,25,30,35,45,55],metric,"KNN",x_train,y_train)
     n_folds = 5
     skf = StratifiedKFold(n_splits=n_folds, shuffle=True)
 
-    k=30
+    clf = GridSearchCV(model, {"n_neighbors":},scoring=[2,5,8,9,10,11,12,15,17,20,25,30,35,45,55], error_score='raise')
+    clf.fit(x_train,y_train)
+    print(clf.best_params_)
+
+    k=10
     result=[]
     columns=["k", "distance_metric", f"test_{metric}", f"train_{metric}", "fit_time",
                                               "score_time"]
@@ -66,7 +71,7 @@ def KNN_experiment():
 
     columns = ["k", "weights", f"test_{metric}", f"train_{metric}", "fit_time",
                "score_time"]
-    parameters = [[30, 'uniform'], [30, 'distance']]
+    parameters = [[10, 'uniform'], [10, 'distance']]
     result=[]
 
     for k, weights in parameters:
@@ -145,12 +150,11 @@ def KNN_experiment():
         "score_name": metric,
     }
 
-    train_sizes, train_scores, valid_scores = learning_curve(neigh, x_train, y_train, cv=5, shuffle=True)
     LearningCurveDisplay.from_estimator(neigh, **common_params, ax=ax)
     handles, label = ax.get_legend_handles_labels()
     ax.legend(handles, ["Training Score", "Test Score"])
     ax.set_title(f"Learning Curve K={k}, weights=distance {neigh.__class__.__name__}")
-    # plt.show()
+    plt.show()
 
 
     k=50
@@ -171,37 +175,12 @@ def KNN_experiment():
         "score_name": metric,
     }
 
-    train_sizes, train_scores, valid_scores = learning_curve(neigh, x_train, y_train, cv=5, shuffle=True)
-    LearningCurveDisplay.from_estimator(neigh, **common_params, ax=ax)
-    handles, label = ax.get_legend_handles_labels()
-    ax.legend(handles, ["Training Score", "Test Score"])
-    ax.set_title(f"Learning Curve K={k}, weights=distance {neigh.__class__.__name__}")
-    # plt.show()
-
-    k=200
-    neigh = KNeighborsClassifier(n_neighbors=k,weights='distance',metric='euclidean')
-
-
-    fig, ax = plt.subplots()
-    n = round(len(x_train) * .8)
-    common_params = {
-        "X": x_train,
-        "y": y_train,
-        "train_sizes": np.arange(k, n - k, 500),
-        "cv": ShuffleSplit(n_splits=50, test_size=0.2, random_state=0),
-        "score_type": "both",
-        "n_jobs": 4,
-        "line_kw": {"marker": "o"},
-        "std_display_style": "fill_between",
-        "score_name": metric,
-    }
-
-    train_sizes, train_scores, valid_scores = learning_curve(neigh, x_train, y_train, cv=5, shuffle=True)
     LearningCurveDisplay.from_estimator(neigh, **common_params, ax=ax)
     handles, label = ax.get_legend_handles_labels()
     ax.legend(handles, ["Training Score", "Test Score"])
     ax.set_title(f"Learning Curve K={k}, weights=distance {neigh.__class__.__name__}")
     plt.show()
+
 
 
 # k = 30
@@ -232,5 +211,5 @@ def KNN_experiment():
 
 if __name__ == "__main__":
     KNN_experiment()
-    neigh = KNeighborsClassifier(n_neighbors=50, metric='minkowski', weights='distance')
+    neigh = KNeighborsClassifier(n_neighbors=10, metric='minkowski', weights='distance')
 

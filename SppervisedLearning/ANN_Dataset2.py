@@ -5,12 +5,12 @@ from keras.layers import Dense, Activation, Dropout
 import seaborn as sns
 from tensorflow import keras
 from sklearn.model_selection import KFold
-from DataPrep import get_data
+from DataPrep2 import get_data
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
 
-metric='accuracy'
+metric='binary_accuracy'
 x_tr,y_tr, x_tst, y_tst = get_data()
 
 
@@ -99,9 +99,10 @@ def complex_model():
 
 
     model = Sequential()
-    model.add(Dense(16, input_dim=117, activation='relu'))
+    model.add(Dense(16, input_dim=11, activation='relu'))
     model.add(Dense(16))
     model.add(Activation('relu'))
+
     model.add(Dense(1))
     model.add(Activation('sigmoid'))
     opt = keras.optimizers.Adam()
@@ -110,7 +111,7 @@ def complex_model():
                   metrics=[metric])
 
     print(model.summary())
-    history = model.fit(X_train, y_train, verbose=1, epochs=200, batch_size=32,
+    history = model.fit(X_train, y_train, verbose=1, epochs=300, batch_size=512,
                         validation_data=(X_test, y_test))
 
     plot_loss(history, "complex_model")
@@ -128,20 +129,20 @@ def simple_model():
     #simple model
 #make sure to mention batch size, layers, nerons, learning rate , epochs
 
-
+#learning_Rate =.002
     model = Sequential()
-    model.add(Dense(2,input_dim=117, activation='relu'))
+    model.add(Dense(16,input_dim=11, activation='relu'))
     # # model.add(Dropout(0.2))
     model.add(Dense(1))
     model.add(Activation('sigmoid'))
-    opt = keras.optimizers.Adam() #
+    opt = keras.optimizers.Adam(learning_rate=.005) #
     model.compile(loss='binary_crossentropy',
                   optimizer=opt,  # also try adam
                   metrics=[metric])
 
     # print(model.summary())
     #
-    history = model.fit(X_train, y_train, verbose=1, epochs=50, batch_size=32,
+    history = model.fit(X_train, y_train, verbose=1, epochs=50, batch_size=64,
                         validation_data=(X_test, y_test))
     #
     _, acc = model.evaluate(X_test, y_test)
@@ -152,22 +153,6 @@ def simple_model():
 
 
 if __name__=="__main__":
-    complex_model()
+    # complex_model()
     simple_model()
-    model = Sequential()
-    model.add(Dense(2,input_dim=117, activation='relu'))
-    # # model.add(Dropout(0.2))
-    model.add(Dense(1))
-    model.add(Activation('sigmoid'))
-    opt = keras.optimizers.Adam() #
-    model.compile(loss='binary_crossentropy',
-                  optimizer=opt,  # also try adam
-                  metrics=[metric])
-
-    # print(model.summary())
-    #
-    history = model.fit(X_train, y_train, verbose=1, epochs=50, batch_size=32,
-                        validation_data=(X_test, y_test))
-    #
-    _, acc = model.evaluate(X_test, y_test)
-    plot_loss(history,"final unseen test")
+#

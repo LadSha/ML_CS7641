@@ -28,7 +28,6 @@ def create_learning_curve(k, neigh, weights):
         "score_name": metric,
     }
 
-    train_sizes, train_scores, valid_scores = learning_curve(neigh, x_train, y_train, cv=5, shuffle=True)
     LearningCurveDisplay.from_estimator(neigh, **common_params, ax=ax)
     handles, label = ax.get_legend_handles_labels()
     ax.legend(handles, ["Training Score", "Test Score"])

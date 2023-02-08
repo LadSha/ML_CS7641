@@ -8,13 +8,12 @@ from sklearn.model_selection import KFold
 from DataPrep2 import get_data
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-
-
-metric='binary_accuracy'
+from HelperFunctions import custom_f1, f1_m
+metric=custom_f1
 x_tr,y_tr, x_tst, y_tst = get_data()
 
 
-X_train, X_test, y_train, y_test = train_test_split(x_tr, y_tr, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(x_tr, y_tr, test_size=0.2, random_state=42, stratify=y_tr)
 
 #complex model
 
@@ -34,13 +33,13 @@ def plot_loss(history,experiment_name):
     plt.show()
 #
 #
-    acc = history.history[metric]
-    val_acc = history.history[f'val_{metric}']
-    plt.plot(epochs, acc, 'y', label=f'Training {metric}')
-    plt.plot(epochs, val_acc, 'r', label=f'Validation {metric}')
+    acc = history.history['f1_m']
+    val_acc = history.history[f'val_f1_m']
+    plt.plot(epochs, acc, 'y', label=f'Training f1')
+    plt.plot(epochs, val_acc, 'r', label=f'Validation f1')
     plt.title(f'Training and validation accuracy {experiment_name}')
     plt.xlabel('Epochs')
-    plt.ylabel(metric)
+    plt.ylabel('f1')
     plt.legend()
     plt.show()
 
@@ -114,6 +113,7 @@ def complex_model():
     history = model.fit(X_train, y_train, verbose=1, epochs=300, batch_size=512,
                         validation_data=(X_test, y_test))
 
+
     plot_loss(history, "complex_model")
 
 
@@ -131,23 +131,29 @@ def simple_model():
 
 #learning_Rate =.002
     model = Sequential()
-    model.add(Dense(16,input_dim=11, activation='relu'))
-    # # model.add(Dropout(0.2))
+    model.add(Dense(8,input_dim=11, activation='relu'))
+    # model.add(Dropout(0.2))
+    #
+    # model.add(Dense(10,input_dim=11, activation='relu'))
+    # model.add(Dropout(0.2))
+
     model.add(Dense(1))
     model.add(Activation('sigmoid'))
-    opt = keras.optimizers.Adam(learning_rate=.005) #
+    opt = keras.optimizers.Adam() #
     model.compile(loss='binary_crossentropy',
                   optimizer=opt,  # also try adam
-                  metrics=[metric])
+                  metrics=[f1_m])
 
-    # print(model.summary())
-    #
-    history = model.fit(X_train, y_train, verbose=1, epochs=50, batch_size=64,
+    print(model.summary())
+    print(model.count_params())
+    history = model.fit(X_train, y_train, verbose=1, epochs=1000, batch_size=256,
                         validation_data=(X_test, y_test))
     #
-    _, acc = model.evaluate(X_test, y_test)
+    _,f1_score= model.evaluate(X_test, y_test, verbose=0)
+    print(f1_score)
+    # _, acc = model.evaluate(X_test, y_test)
 
-    print("Accuracy = ", (acc * 100.0), "%")
+    # print("Accuracy = ", (acc * 100.0), "%")
     plot_loss(history,"simple_model")
 
 

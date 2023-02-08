@@ -7,9 +7,8 @@ from sklearn.model_selection import LearningCurveDisplay, ShuffleSplit
 from sklearn.model_selection import learning_curve
 from sklearn import neural_network
 import time
-from sklearn.svm import SVC
-from sklearn.datasets import make_classification
-from DataPrep import get_data
+
+from keras import backend as K
 
 def prepare_val_curve(model,param_name,param_range,scoring, algorithm_name,x_train,y_train):
     # reference: https://scikit-learn.org/
@@ -89,3 +88,41 @@ def grid_search(parameters, scoring, refit, model,x_train,y_train):
     clf.fit(x_train,y_train)
     print(clf.best_params_)
     return(clf.best_params_.values)
+
+#Reference https://neptune.ai/blog/implementing-the-macro-f1-score-in-keras
+def custom_f1(y_true, y_pred):
+    def recall_m(y_true, y_pred):
+        TP = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+        Positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+
+        recall = TP / (Positives+K.epsilon())
+        return recall
+
+
+    def precision_m(y_true, y_pred):
+        TP = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+        Pred_Positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+
+        precision = TP / (Pred_Positives+K.epsilon())
+        return precision
+
+    precision, recall = precision_m(y_true, y_pred), recall_m(y_true, y_pred)
+
+    return 2*((precision*recall)/(precision+recall+K.epsilon()))
+
+def recall_m(y_true, y_pred):
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    recall = true_positives / (possible_positives + K.epsilon())
+    return recall
+
+def precision_m(y_true, y_pred):
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
+    return precision
+
+def f1_m(y_true, y_pred):
+    precision = precision_m(y_true, y_pred)
+    recall = recall_m(y_true, y_pred)
+    return 2*((precision*recall)/(precision+recall+K.epsilon()))

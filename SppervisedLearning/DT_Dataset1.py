@@ -8,6 +8,7 @@ from HelperFunctions import grid_search, prepare_val_curve,create_learning_curve
 x_train,y_train, x_test, y_test = get_data()
 metric = 'accuracy'
 
+
 def DT_experiement():
     modelDT=DecisionTreeClassifier(random_state=0)
     # find_alph()
@@ -25,7 +26,7 @@ def DT_experiement():
 # #find alpha
 def find_alph():
     #Reference: https://scikit-learn.org/stable/auto_examples/tree/plot_cost_complexity_pruning.html#sphx-glr-auto-examples-tree-plot-cost-complexity-pruning-py
-    clf = DecisionTreeClassifier(random_state=0)
+    clf = DecisionTreeClassifier(random_state=42)
     path = clf.cost_complexity_pruning_path(x_train, y_train)
     ccp_alphas, impurities = path.ccp_alphas, path.impurities
 

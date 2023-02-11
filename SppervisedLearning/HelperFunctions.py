@@ -62,7 +62,7 @@ def create_learning_curve(estimator,metric,title,x_train,y_train):
 #reference: https://scikit-learn.org/
     fig, ax = plt.subplots()
     n=round(len(x_train)*.8)
-    split=round(n/10)
+    split=round(n/15)
     common_params = {
         "X": x_train,
         "y": y_train,

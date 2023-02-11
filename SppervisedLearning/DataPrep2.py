@@ -28,6 +28,7 @@ def get_data():
 
     return xtrain,ytrain, xtest, ytest
 if __name__=="__main__":
+
     xtrain, ytrain, xtest, ytest=get_data()
 
 

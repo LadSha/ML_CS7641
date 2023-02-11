@@ -15,8 +15,8 @@ def DT_experiement():
     # find_alph( modelDT)
     # GrSearch()
 
-    prepare_val_curve(modelDT,'max_depth',np.arange(1,40,1),metric,"DTClassifier",x_train,y_train)
-    prepare_val_curve(modelDT, 'max_leaf_nodes', np.arange(1, 40, 1), metric, "DTClassifier",x_train,y_train)
+    prepare_val_curve(modelDT,'max_depth',np.arange(1,40,1),metric,"DTClassifier-Default Params",x_train,y_train)
+    prepare_val_curve(modelDT, 'max_leaf_nodes', np.arange(1, 40, 1), metric, "DTClassifier-Default Params",x_train,y_train)
     create_learning_curve(modelDT, metric, "DT-default", x_train, y_train)
     # find_alph( modelDT)
 
@@ -94,5 +94,5 @@ def GrSearch():
 
 if __name__=='__main__':
     DT_experiement()
-    modelDT=DecisionTreeClassifier(random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
+    modelDT=DecisionTreeClassifier(random_state=0,max_depth=3, max_leaf_nodes=3,ccp_alpha=.04)
 

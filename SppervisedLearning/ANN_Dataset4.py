@@ -183,8 +183,8 @@ def simple_model():
 
     # learning rate
     model = Sequential()
-    nodes=5
-    dropout=0.2
+    nodes=4
+    dropout=0.15
     lr=0.01
     model.add(Dense(nodes, input_dim=X_train.shape[1], activation='relu'))
     model.add(Dropout(dropout))
@@ -237,23 +237,3 @@ def simple_model():
 if __name__=="__main__":
     # complex_model()
     simple_model()
-    # model = Sequential()
-    # model.add(Dense(2, input_dim=X_train.shape[1], activation='relu'))
-    # model.add(Dropout(0.05))
-    # model.add(Dense(1))
-    # model.add(Activation('sigmoid'))
-    # opt = keras.optimizers.Adam(learning_rate=.001)  #
-    # model.compile(loss='binary_crossentropy',
-    #               optimizer=opt,  # also try adam
-    #               metrics=["Recall"])  # f1_m
-    # # class_weights = {0: .7, 1: 1}
-    # es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=100)
-    #
-    # history = model.fit(X_train, y_train, verbose=1, epochs=1000, batch_size=32,
-    #                     validation_data=(X_val, y_val), callbacks=[es])
-    #
-    # l, rec = model.evaluate(X_test, y_test)
-    #
-    # # print("Recall = ", (rec * 100.0), "%")
-    # plot_loss(history, "1layer-2node-.05dropout")
-    #

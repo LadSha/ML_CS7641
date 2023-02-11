@@ -54,7 +54,7 @@ def prepare_val_curve(model,param_name,param_range,scoring, algorithm_name,x_tra
         color="navy",
         lw=lw,
     )
-    plt.legend(loc="best")
+    plt.legend(loc="lower left")
     plt.show()
 
 def create_learning_curve(estimator,metric,title,x_train,y_train):
@@ -62,10 +62,11 @@ def create_learning_curve(estimator,metric,title,x_train,y_train):
 #reference: https://scikit-learn.org/
     fig, ax = plt.subplots()
     n=round(len(x_train)*.8)
+    split=round(n/10)
     common_params = {
         "X": x_train,
         "y": y_train,
-        "train_sizes": np.arange(1,n,200),
+        "train_sizes": np.arange(1,n,split),
         "cv": ShuffleSplit(n_splits=50, test_size=0.2, random_state=0),
         "score_type": "both",
         "n_jobs": 4,

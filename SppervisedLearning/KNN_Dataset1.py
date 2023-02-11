@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.model_selection import LearningCurveDisplay, ShuffleSplit
-from sklearn.model_selection import learning_curve
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_validate, StratifiedKFold
 from IPython.display import display

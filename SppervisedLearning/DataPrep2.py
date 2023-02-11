@@ -20,7 +20,7 @@ def get_data():
     features = df.drop(['quality', 'best_quality'], axis=1)
     target = df['best_quality']
     xtrain, xtest, ytrain, ytest = train_test_split(
-        features, target, test_size=0.25, random_state=42)
+        features, target, test_size=0.2, random_state=42)
 
     norm = MinMaxScaler()
     xtrain = norm.fit_transform(xtrain)

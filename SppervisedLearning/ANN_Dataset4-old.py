@@ -5,19 +5,19 @@ from keras.layers import Dense, Activation, Dropout
 import seaborn as sns
 from tensorflow import keras
 from sklearn.model_selection import KFold
-from DataPrep2 import get_data
+from DataPrep4 import get_data
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from HelperFunctions import custom_f1, f1_m
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from numpy.random import seed
-
-metric="accuracy"#custom_f1
-x_tr,y_tr, X_test, y_test = get_data()
+from HelperFunctions import custom_f1, f1_m
 
 
-X_train, X_val, y_train, y_val = train_test_split(x_tr, y_tr, test_size=0.15, random_state=0, stratify=y_tr)
+metric='f1_m'
+x_tr,y_tr, x_tst, y_tst = get_data()
 
+X_train, X_test, y_train, y_test = train_test_split(x_tr, y_tr, test_size=0.2, random_state=42)
+
+cols=X_train.shape[1]
 #complex model
 
 def plot_loss(history,experiment_name):
@@ -36,13 +36,13 @@ def plot_loss(history,experiment_name):
     plt.show()
 #
 #
-    acc = history.history[f'{metric}']
+    acc = history.history[metric]
     val_acc = history.history[f'val_{metric}']
-    plt.plot(epochs, acc, 'y', label=f'Training f1')
-    plt.plot(epochs, val_acc, 'r', label=f'Validation f1')
+    plt.plot(epochs, acc, 'y', label=f'Training {metric}')
+    plt.plot(epochs, val_acc, 'r', label=f'Validation {metric}')
     plt.title(f'Training and validation accuracy {experiment_name}')
     plt.xlabel('Epochs')
-    plt.ylabel('f1')
+    plt.ylabel(metric)
     plt.legend()
     plt.show()
 
@@ -101,23 +101,22 @@ def complex_model():
 
 
     model = Sequential()
-    model.add(Dense(16, input_dim=11, activation='relu'))
+    model.add(Dense(16, input_dim=cols, activation='relu'))
     model.add(Dense(16))
     model.add(Activation('relu'))
-
     model.add(Dense(1))
     model.add(Activation('sigmoid'))
     opt = keras.optimizers.Adam()
     model.compile(loss='binary_crossentropy',
                   optimizer=opt,             #also try adam
                   metrics=[metric])
+    es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=100)
 
     print(model.summary())
-    history = model.fit(X_train, y_train, verbose=1, epochs=300, batch_size=512,
+    history = model.fit(X_train, y_train, verbose=1, epochs=500, batch_size=32,callbacks=[es],
                         validation_data=(X_test, y_test))
 
-
-    plot_loss(history, "complex_model")
+    plot_loss(history, "2layers-16nodes each")
 
 
 
@@ -128,43 +127,90 @@ def complex_model():
 
 
 def simple_model():
-    seed(1)
+
     #simple model
 #make sure to mention batch size, layers, nerons, learning rate , epochs
 
-    model = Sequential()
-    model.add(Dense(8,input_dim=11, activation='relu'))
-    model.add(Dropout(0.14))
-    print(len(y_train[y_train==1]))
     #
+    # model = Sequential()
+    # model.add(Dense(2,input_dim=cols, activation='relu'))
+    # # # model.add(Dropout(0.2))
+    # model.add(Dense(1))
+    # model.add(Activation('sigmoid'))
+    # opt = keras.optimizers.Adam() #
+    # model.compile(loss='binary_crossentropy',
+    #               optimizer=opt,  # also try adam
+    #               metrics=[metric])
+    #
+    # # print(model.summary())
+    # #
+    # es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=100)
+    #
+    # history = model.fit(X_train, y_train, verbose=1, epochs=500, batch_size=32,callbacks=[es],
+    #                     validation_data=(X_test, y_test))
+    #
+    # plot_loss(history,"1layer-2nodes")
+#add dropout
+    # model = Sequential()
+    # model.add(Dense(2,input_dim=cols, activation='relu'))
+    # model.add(Dropout(0.05))
+    # model.add(Dense(1))
+    # model.add(Activation('sigmoid'))
+    # opt = keras.optimizers.Adam() #
+    # model.compile(loss='binary_crossentropy',
+    #               optimizer=opt,  # also try adam
+    #               metrics=[metric])
+    #
+    # # print(model.summary())
+    # #
+    # es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=100)
+    #
+    # history = model.fit(X_train, y_train, verbose=1, epochs=500, batch_size=32,callbacks=[es],
+    #                     validation_data=(X_test, y_test))
+    #
+    # plot_loss(history,"1layer-2nodes-0.05dropout")
+
+    #learning rate
     print(len(y_train[y_train==0]))
+    print(len(y_train[y_train==1]))
+    model = Sequential()
+    model.add(Dense(2,input_dim=cols, activation='relu'))
+    # # model.add(Dropout(0.2))
+    class_weights = {0: .7, 1: 1}
 
-    # model.add(Dense(64,input_dim=11, activation='relu'))
-    # model.add(Dense(16,input_dim=11, activation='relu'))
-
-    # model.add(Dropout(0.2))
 
     model.add(Dense(1))
     model.add(Activation('sigmoid'))
-    opt = keras.optimizers.Adam()#
+    opt = keras.optimizers.Adam(learning_rate=0.005) #
     model.compile(loss='binary_crossentropy',
                   optimizer=opt,  # also try adam
-                  metrics=[metric])#f1_m
-    # class_weights = {0: .7, 1: 1}
+                  metrics=[metric])
+
+    #
     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=100)
 
-    history = model.fit(X_train, y_train, verbose=1, epochs=500, batch_size=256,
-                        validation_data=(X_val, y_val),callbacks=[es])
-    #
-    _,f1_score= model.evaluate(X_test, y_test, verbose=0)
-    # print(f1_score)
-    l, acc = model.evaluate(X_test, y_test)
-    print(history.history)
-    # print("Accuracy = ", (acc * 100.0), "%")
-    plot_loss(history,"1layer-8node-.05dropout")
+    history = model.fit(X_train, y_train, verbose=1, epochs=500, batch_size=32,callbacks=[es],
+                        validation_data=(X_test, y_test))
 
+    plot_loss(history,"1layer-2nodes")
 
 if __name__=="__main__":
     # complex_model()
     simple_model()
-#
+    # model = Sequential()
+    # model.add(Dense(2,input_dim=cols, activation='relu'))
+    # # # model.add(Dropout(0.2))
+    # model.add(Dense(1))
+    # model.add(Activation('sigmoid'))
+    # opt = keras.optimizers.Adam() #
+    # model.compile(loss='binary_crossentropy',
+    #               optimizer=opt,  # also try adam
+    #               metrics=[metric])
+    #
+    # # print(model.summary())
+    # #
+    # history = model.fit(X_train, y_train, verbose=1, epochs=50, batch_size=32,
+    #                     validation_data=(X_test, y_test))
+    # #
+    # _, acc = model.evaluate(X_test, y_test)
+    # plot_loss(history,"final unseen test")

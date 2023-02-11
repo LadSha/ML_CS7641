@@ -1,39 +1,32 @@
 from sklearn.tree import DecisionTreeClassifier
 import matplotlib.pyplot as plt
-from DataPrep4 import get_data
+from DataPrep import get_data
 from sklearn.model_selection import train_test_split
 import numpy as np
 from HelperFunctions import grid_search, prepare_val_curve,create_learning_curve
 
 x_train,y_train, x_test, y_test = get_data()
-metric = 'recall'
-
+metric = 'accuracy'
 
 
 def DT_experiement():
     modelDT=DecisionTreeClassifier(random_state=0)
-    # find_alph( modelDT)
+    # find_alph()
     # GrSearch()
 
-    prepare_val_curve(modelDT,'max_depth',np.arange(1,40,1),metric,"DTClassifier-Default Params",x_train,y_train)
-    prepare_val_curve(modelDT, 'max_leaf_nodes', np.arange(1, 40, 1), metric, "DTClassifier-Default Params",x_train,y_train)
-    create_learning_curve(modelDT, metric, "DT-default", x_train, y_train)
-    # find_alph( modelDT)
+    prepare_val_curve(modelDT,'max_depth',np.arange(1,40,1),metric,"DTClassifier",x_train,y_train)
+    prepare_val_curve(modelDT, 'max_leaf_nodes', np.arange(1, 40, 1), metric, "DTClassifier",x_train,y_train)
 
-    max_depth=3
-    max_leaf=3
-    modelDT=DecisionTreeClassifier(random_state=0,max_depth=max_depth, max_leaf_nodes=max_leaf)
-    find_alph( modelDT)
+    # modelDT=DecisionTreeClassifier(random_state=0,max_depth=3, max_leaf_nodes=7,ccp_alpha=.003)
+    create_learning_curve(modelDT,metric,"DT-default",x_train,y_train)
 
-    create_learning_curve(modelDT, metric, f"DT-maxDepth={max_depth} leaf_nodes={max_leaf}", x_train, y_train)
-    modelDT=DecisionTreeClassifier(random_state=0,max_depth=max_depth, max_leaf_nodes=max_leaf,ccp_alpha=.04)
-    create_learning_curve(modelDT, metric, "DT-tuned-postPruned", x_train, y_train)
-
+    modelDT = DecisionTreeClassifier(random_state=0,max_depth=15, max_leaf_nodes=15)
+    create_learning_curve(modelDT,metric,"DT-default",x_train,y_train)
 
 # #find alpha
-def find_alph(clf):
+def find_alph():
     #Reference: https://scikit-learn.org/stable/auto_examples/tree/plot_cost_complexity_pruning.html#sphx-glr-auto-examples-tree-plot-cost-complexity-pruning-py
-
+    clf = DecisionTreeClassifier(random_state=42)
     path = clf.cost_complexity_pruning_path(x_train, y_train)
     ccp_alphas, impurities = path.ccp_alphas, path.impurities
 
@@ -79,7 +72,7 @@ def find_alph(clf):
     ax.set_title(f"{metric} vs alpha for training and testing sets")
     ax.plot(ccp_alphas, train_scores, marker="o", label="train", drawstyle="steps-post")
     ax.plot(ccp_alphas, test_scores, marker="o", label="test", drawstyle="steps-post")
-    ax.legend(loc="lower left")
+    ax.legend()
     plt.show()
 #
 # #
@@ -94,5 +87,4 @@ def GrSearch():
 
 if __name__=='__main__':
     DT_experiement()
-    modelDT=DecisionTreeClassifier(random_state=0,max_depth=3, max_leaf_nodes=3,ccp_alpha=.04)
 

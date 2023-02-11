@@ -1,32 +1,40 @@
 from sklearn.tree import DecisionTreeClassifier
 import matplotlib.pyplot as plt
-from DataPrep import get_data
+from DataPrep4 import get_data
 from sklearn.model_selection import train_test_split
 import numpy as np
 from HelperFunctions import grid_search, prepare_val_curve,create_learning_curve
 
 x_train,y_train, x_test, y_test = get_data()
-metric = 'accuracy'
+metric = 'recall'
+
 
 
 def DT_experiement():
-    modelDT=DecisionTreeClassifier(random_state=0)
-    # find_alph()
+    modelDT=DecisionTreeClassifier(criterion='entropy',random_state=0)
+    # find_alph( modelDT)
     # GrSearch()
 
-    prepare_val_curve(modelDT,'max_depth',np.arange(1,40,1),metric,"DTClassifier",x_train,y_train)
-    prepare_val_curve(modelDT, 'max_leaf_nodes', np.arange(1, 40, 1), metric, "DTClassifier",x_train,y_train)
+    prepare_val_curve(modelDT,'max_depth',np.arange(1,40,1),metric,"DTClassifier-Default Params",x_train,y_train)
+    prepare_val_curve(modelDT, 'max_leaf_nodes', np.arange(1, 40, 1), metric, "DTClassifier-Default Params",x_train,y_train)
+    create_learning_curve(modelDT, metric, "DT-default", x_train, y_train)
+    # find_alph( modelDT)
 
-    # modelDT=DecisionTreeClassifier(random_state=0,max_depth=3, max_leaf_nodes=7,ccp_alpha=.003)
-    create_learning_curve(modelDT,metric,"DT-default",x_train,y_train)
+    max_depth=3
+    max_leaf=3
+    alpha=.045
+    modelDT=DecisionTreeClassifier(criterion = 'entropy',random_state=0,max_depth=max_depth, max_leaf_nodes=max_leaf)
+    find_alph( modelDT)
 
-    modelDT = DecisionTreeClassifier(random_state=0,max_depth=15, max_leaf_nodes=15)
-    create_learning_curve(modelDT,metric,"DT-default",x_train,y_train)
+    create_learning_curve(modelDT, metric, f"DT-maxDepth={max_depth} leaf_nodes={max_leaf}", x_train, y_train)
+    modelDT=DecisionTreeClassifier(random_state=0,max_depth=max_depth, max_leaf_nodes=max_leaf,ccp_alpha=alpha,criterion='entropy')
+    create_learning_curve(modelDT, metric, f"DT-maxDepth={max_depth} leaf_nodes={max_leaf} alpha={alpha}", x_train, y_train)
+
 
 # #find alpha
-def find_alph():
+def find_alph(clf):
     #Reference: https://scikit-learn.org/stable/auto_examples/tree/plot_cost_complexity_pruning.html#sphx-glr-auto-examples-tree-plot-cost-complexity-pruning-py
-    clf = DecisionTreeClassifier(random_state=42)
+
     path = clf.cost_complexity_pruning_path(x_train, y_train)
     ccp_alphas, impurities = path.ccp_alphas, path.impurities
 
@@ -72,19 +80,22 @@ def find_alph():
     ax.set_title(f"{metric} vs alpha for training and testing sets")
     ax.plot(ccp_alphas, train_scores, marker="o", label="train", drawstyle="steps-post")
     ax.plot(ccp_alphas, test_scores, marker="o", label="test", drawstyle="steps-post")
-    ax.legend()
+    ax.legend(loc="lower left")
     plt.show()
 #
 # #
 # # #grid search
 def GrSearch():
-    modelDT=DecisionTreeClassifier(random_state=0,ccp_alpha=.003)
-    parameters = {'max_depth': np.arange(1, 40, 1), 'criterion': ('gini', 'entropy', 'log_loss'),
-                  'max_leaf_nodes': np.arange(2, 40, 1)} #, 'ccp_alpha': np.arange(0, .05, 0.01).tolist()
+    modelDT=DecisionTreeClassifier(random_state=0,max_depth=3, max_leaf_nodes=3,ccp_alpha=.03)
+    parameters = { 'criterion': ('gini', 'entropy', 'log_loss'),
+                  } #, 'ccp_alpha': np.arange(0, .05, 0.01).tolist()
     best_parm = grid_search(parameters, scoring=metric, refit=metric, model=modelDT,x_train=x_train,y_train=y_train)
     print(best_parm)
     return best_parm
 
 if __name__=='__main__':
+
     DT_experiement()
+    # GrSearch()
+    modelDT=DecisionTreeClassifier(criterion='entropy',random_state=0,max_depth=3, max_leaf_nodes=3,ccp_alpha=.045)
 

@@ -79,7 +79,7 @@ def create_learning_curve(estimator,metric,title,x_train,y_train):
     LearningCurveDisplay.from_estimator(estimator, **common_params, ax=ax)
     handles, label = ax.get_legend_handles_labels()
     ax.legend(handles[:2], ["Training Score", "Test Score"])
-    ax.set_title(f"Learning Curve for {estimator.__class__.__name__} {title}")
+    ax.set_title(f" {estimator.__class__.__name__} {title}")
     plt.show()
 
 def grid_search(parameters, scoring, refit, model,x_train,y_train):

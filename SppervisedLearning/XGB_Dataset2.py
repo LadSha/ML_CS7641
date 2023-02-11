@@ -12,22 +12,29 @@ metric = 'f1'
 
 def XGB_experiement():
 
-    n=39
-    lr=1
-    modelDT = AdaBoostClassifier(n_estimators=n, random_state=0)#estimator=DecisionTreeClassifier(random_state=0,max_depth=3, max_leaf_nodes=3,ccp_alpha=.04)
-    # find_alph( modelDT)
-    # GrSearch()
+    n=80
+    lr=.8
+    modelDT = AdaBoostClassifier(random_state=0)#
 
-    classfier_name="AdaBoost"
-    prepare_val_curve(modelDT,'learning_rate',[.5,.75,1, 1.5, 2, 2.5],metric,"AdaBoost",x_train,y_train)
+    classfier_name="AdaBoost-defaultParams"
+    prepare_val_curve(modelDT,'learning_rate',[.1,.5,.75,1, 1.5, 2, 2.5],metric,classfier_name,x_train,y_train)
+    prepare_val_curve(modelDT,'n_estimators',np.arange(5,100,4),metric,classfier_name,x_train,y_train)
 
     modelDT = AdaBoostClassifier(n_estimators=n,learning_rate=lr, random_state=0)
-    prepare_val_curve(modelDT,'n_estimators',np.arange(20,60,4),metric,"AdaBoost",x_train,y_train)
+    create_learning_curve(modelDT, metric, f"{n}estmatrs-{lr}-LearnRate-no leaf/depth limit", x_train, y_train)
 
-    create_learning_curve(modelDT, metric, f"{n}estimators-{lr}LearnRate", x_train, y_train)
+    modelDT = AdaBoostClassifier(n_estimators=n,learning_rate=lr, random_state=0, estimator=DecisionTreeClassifier(random_state=0,max_depth=5, max_leaf_nodes=5))
+    create_learning_curve(modelDT, metric, f"{n}estimators-{lr}LearnRate-5depth-5leaves", x_train, y_train)
 
+    modelDT = AdaBoostClassifier(n_estimators=50,learning_rate=lr, random_state=0, estimator=DecisionTreeClassifier(random_state=0,max_depth=3, max_leaf_nodes=3))
 
+    create_learning_curve(modelDT, metric, f"{50}estimators-{lr}LearnRate-3depth-3leaves", x_train, y_train)
 
+    n=100
+    lr=.7
+    modelDT = AdaBoostClassifier(n_estimators=n,learning_rate=lr, random_state=0, estimator=DecisionTreeClassifier(random_state=0,max_depth=3, max_leaf_nodes=3))
+
+    create_learning_curve(modelDT, metric, f"{n}estimators-{lr}LearnRate-3depth-3leaves", x_train, y_train)
 
 
 def GrSearch():

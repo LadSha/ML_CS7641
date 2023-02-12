@@ -13,8 +13,8 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from numpy.random import seed
 import tensorflow as tf
 
-metric="f1_m"#custom_f1
-metric="recall"
+
+metric="f1_m"
 x_tr,y_tr, X_test, y_test = get_data()
 
 
@@ -51,78 +51,6 @@ def plot_loss(history,experiment_name):
     plt.legend()
     plt.show()
 
-
-
-
-def complex_model():
-    # Define the K-fold Cross Validator
-    # num_folds = 5
-    # verbosity=True
-    # batch_size = 32
-    # no_epochs = 50
-    #
-    # # Define per-fold score containers
-    # acc_per_fold = []
-    # loss_per_fold = []
-    #
-    # kfold = KFold(n_splits=num_folds, shuffle=True)
-    #
-    # # K-fold Cross Validation model evaluation
-    # fold_no = 1
-    # for train, test in kfold.split(x_train, y_train):
-    #
-    #     model = Sequential()
-    #     model.add(Dense(16, input_dim=117, activation='relu'))
-    #     model.add(Dense(16))
-    #     model.add(Activation('relu'))
-    #     model.add(Dense(1))
-    #     model.add(Activation('sigmoid'))
-    #     model.compile(loss='binary_crossentropy',
-    #                   optimizer='adam',             #also try adam
-    #                   metrics=[metric])
-    #
-    #     print(model.summary())
-    #     # history = model.fit(X_train, y_train, verbose=1, epochs=500, batch_size=32,
-    #     #                     validation_data=(X_test, y_test))
-    #     history = model.fit(x_train[train], y_train[train],
-    #                         batch_size=batch_size,
-    #                         epochs=no_epochs,
-    #                         verbose=verbosity,validation_split=.2)
-    #
-    #     # Generate generalization metrics
-    #     scores = model.evaluate(x_train[test], y_train[test], verbose=0)
-    #     print(
-    #         f'Score for fold {fold_no}: {model.metrics_names[0]} of {scores[0]}; {model.metrics_names[1]} of {scores[1] * 100}%')
-    #     acc_per_fold.append(scores[1] * 100)
-    #     loss_per_fold.append(scores[0])
-    #
-    #     # Increase fold number
-    #     fold_no = fold_no + 1
-    #
-    # plot_loss(history)
-    # print()
-
-
-
-
-    model = Sequential()
-    model.add(Dense(16, input_dim=11, activation='relu'))
-    model.add(Dense(16))
-    model.add(Activation('relu'))
-
-    model.add(Dense(1))
-    model.add(Activation('sigmoid'))
-    opt = keras.optimizers.Adam()
-    model.compile(loss='binary_crossentropy',
-                  optimizer=opt,             #also try adam
-                  metrics=[metric])
-
-    print(model.summary())
-    history = model.fit(X_train, y_train, verbose=1, epochs=300, batch_size=512,
-                        validation_data=(X_test, y_test))
-
-
-    plot_loss(history, "complex_model")
 
 
 
@@ -184,20 +112,17 @@ def simple_model():
     # learning rate
     model = Sequential()
     nodes=4
-    dropout=0.15
+    dropout="no "
     lr=0.01
     model.add(Dense(nodes, input_dim=X_train.shape[1], activation='relu'))
-    model.add(Dropout(dropout))
-    # model.add(Dense(nodes, input_dim=X_train.shape[1], activation='relu'))
-
-
+    # model.add(Dropout(dropout))
 
     model.add(Dense(1))
-    model.add(Activation('LeakyReLU'))
+    model.add(Activation('sigmoid'))
     opt = keras.optimizers.Adam()  #
     model.compile(loss =tf.keras.losses.BinaryCrossentropy(from_logits=True),
                   optimizer=opt,  # also try adam
-                  metrics=["Recall"])  # f1_m
+                  metrics=[f1_m])  # f1_m
     # class_weights = {0: .7, 1: 1}
     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=100)
 

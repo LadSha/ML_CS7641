@@ -75,7 +75,7 @@ def GrSearch():
 if __name__ == "__main__":
 
     SVM_experiment()
-    SVC(random_state=42, gamma=5, kernel='poly')
+
 # svc=SVC(random_state=42, gamma=.008, tol=.1,class_weight=None, kernel='linear')
 #
 # print(validation_curve(estimator=svc,X=x_train,y=y_train,param_name='kernel',param_range= ['linear','poly'],cv=5,scoring=metric))

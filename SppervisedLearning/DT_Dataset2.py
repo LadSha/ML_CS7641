@@ -93,5 +93,5 @@ def GrSearch():
 if __name__=='__main__':
     GrSearch()
     DT_experiement()
-    modelDT=DecisionTreeClassifier(random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
+    modelDT=DecisionTreeClassifier(criterion="entropy",random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
 

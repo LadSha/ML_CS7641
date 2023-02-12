@@ -1,6 +1,6 @@
 from sklearn.tree import DecisionTreeClassifier
 import matplotlib.pyplot as plt
-from DataPrep4 import get_data
+from DataPrep1 import get_data
 from sklearn.model_selection import train_test_split
 import numpy as np
 from HelperFunctions import grid_search, prepare_val_curve,create_learning_curve

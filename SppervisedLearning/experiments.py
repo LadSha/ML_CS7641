@@ -1,4 +1,4 @@
-import DT
+import Compare
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder,LabelEncoder, StandardScaler
 from sklearn.tree import DecisionTreeClassifier

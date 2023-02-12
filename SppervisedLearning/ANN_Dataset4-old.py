@@ -5,7 +5,7 @@ from keras.layers import Dense, Activation, Dropout
 import seaborn as sns
 from tensorflow import keras
 from sklearn.model_selection import KFold
-from DataPrep4 import get_data
+from DataPrep1 import get_data
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from keras.callbacks import EarlyStopping, ModelCheckpoint

@@ -5,7 +5,7 @@ from sklearn.model_selection import learning_curve
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_validate, StratifiedKFold
 from IPython.display import display
-from DataPrep4 import get_data
+from DataPrep1 import get_data
 from HelperFunctions import prepare_val_curve,grid_search
 import pandas as pd
 from sklearn.model_selection import GridSearchCV
@@ -120,5 +120,5 @@ def KNN_experiment():
 
 if __name__ == "__main__":
     KNN_experiment()
-    neigh = KNeighborsClassifier(n_neighbors=50, metric='euclidean', weights='uniform')
+    neigh = KNeighborsClassifier(n_neighbors=10, weights='uniform')
 

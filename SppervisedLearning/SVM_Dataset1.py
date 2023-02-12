@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.model_selection import LearningCurveDisplay, ShuffleSplit
 from sklearn.model_selection import learning_curve
 from sklearn.svm import SVC
-from DataPrep4 import get_data
+from DataPrep1 import get_data
 from HelperFunctions import prepare_val_curve
 from HelperFunctions import create_learning_curve
 from sklearn.metrics import accuracy_score
@@ -76,7 +76,7 @@ def SVM_experiment():
 
 if __name__ == "__main__":
     SVM_experiment()
-    model=SVC(random_state=42, kernel= 'linear', gamma=.01,C=.1)
+    model=SVC(random_state=42, kernel= 'linear', gamma=.05,C=.1)
 # svc=SVC(random_state=42, gamma=.008, tol=.1,class_weight=None, kernel='linear')
 #
 # print(validation_curve(estimator=svc,X=x_train,y=y_train,param_name='kernel',param_range= ['linear','poly'],cv=5,scoring=metric))

@@ -40,10 +40,10 @@ def create_learning_curve(k, neigh, weights):
 def KNN_experiment():
     # GS suggested  distance: {'algorithm': 'auto', 'metric': 'minkowski', 'n_neighbors': 2, 'weights': 'distance'}
     # # parameters = {'n_neighbors': np.arange(7, 45, 2) , 'weights':['uniform', 'distance'], 'metric':['manhattan','minkowski','euclidean'], 'algorithm':['auto', 'ball_tree','kd_tree','brute'],'p':np.arange(1,10,1)}
+    # #
+    # # # best_parm = grid_search(parameters, scoring=metric, refit=metric, model=neigh)
+    # #
     #
-    # # best_parm = grid_search(parameters, scoring=metric, refit=metric, model=neigh)
-    #
-
     distance_metric='euclidean'
     weights='distance'
     model = KNeighborsClassifier(weights=weights,metric=distance_metric)#metric='minkowski',weights='distance'
@@ -105,14 +105,9 @@ def KNN_experiment():
     neigh = KNeighborsClassifier(n_neighbors=k, weights=weights, metric=distance_metric)
     create_learning_curve(k, neigh, weights)
 
-    weights='distance'
-    k = 30
+    k = 60
     neigh = KNeighborsClassifier(n_neighbors=k, weights=weights, metric=distance_metric)
     create_learning_curve(k, neigh, weights)
-    k = 50
-    neigh = KNeighborsClassifier(n_neighbors=k, weights=weights, metric=distance_metric)
-    create_learning_curve(k, neigh, weights)
-
 
 
 

@@ -27,13 +27,15 @@ def SVM_experiment():
     for param, param_range in parameters:
         prepare_val_curve(svc,param,param_range, metric,f"SVM", x_train,y_train)
 
-    gamma=.01
+    gamma=.05
     n_folds = 5
+    c=.1
+
     skf = StratifiedKFold(n_splits=n_folds, shuffle=True)
     result=[]
 
     for kernel in ['linear', 'poly', 'rbf', 'sigmoid']:  # '
-        model = SVC(random_state=42, kernel=kernel, gamma=gamma)
+        model = SVC(random_state=42, kernel=kernel, gamma=gamma, C=c)
         cv_results = cross_validate(estimator=model, X=x_train, y=y_train, cv=skf, return_train_score=True,
                                     scoring=[metric])
         metrics = {'mean_' + k: np.mean(v) for k, v in cv_results.items()}  # if k not in ["fit_time", "score_time"]
@@ -54,14 +56,22 @@ def SVM_experiment():
 
 
     for kernel in ['linear', 'poly', 'rbf', 'sigmoid']:
-        model=SVC(random_state=42, kernel= kernel, gamma=gamma)
-        create_learning_curve(model,metric,f' kernel={kernel}', x_train,y_train)
+        model=SVC(random_state=42, kernel= kernel, gamma=gamma, C=c)
+        create_learning_curve(model,metric,f'gamma={gamma} kernel={kernel} C={c}', x_train,y_train)
 
+    result=[]
+    for c in [.1,.25,.5,.75,1]:  # '
+        model = SVC(random_state=42, kernel='linear', gamma=gamma, C=c)
+        cv_results = cross_validate(estimator=model, X=x_train, y=y_train, cv=skf, return_train_score=True,
+                                    scoring=[metric])
+        metrics = {'mean_' + k: np.mean(v) for k, v in cv_results.items()}  # if k not in ["fit_time", "score_time"]
 
-    model=SVC(random_state=42, kernel= 'linear', gamma=gamma,C=.1)
-    create_learning_curve(model,metric,f'gamma={gamma} kernel=linear',x_train,y_train)
-
-
+        result.append(
+            [c, metrics[f"mean_test_{metric}"], metrics[f"mean_train_{metric}"], metrics["mean_fit_time"],
+             metrics["mean_score_time"]])
+    pd_result = pd.DataFrame(result,
+                                 columns=["C", f"test_{metric}", f"train_{metric}", "fit_time", "score_time"])
+    display(pd_result)
 
 
 if __name__ == "__main__":

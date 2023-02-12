@@ -11,7 +11,8 @@ metric = 'f1'
 
 
 def DT_experiement():
-    modelDT=DecisionTreeClassifier(random_state=0)
+    criterion = 'entropy'
+    modelDT=DecisionTreeClassifier(random_state=0, criterion =criterion )
     # find_alph( modelDT)
     # GrSearch()
 
@@ -19,11 +20,11 @@ def DT_experiement():
     prepare_val_curve(modelDT, 'max_leaf_nodes', np.arange(1, 40, 1), metric, "DTClassifier",x_train,y_train)
     create_learning_curve(modelDT, metric, "DT-default", x_train, y_train)
 
-    modelDT=DecisionTreeClassifier(random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
+    modelDT=DecisionTreeClassifier(criterion = criterion, random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
 
     create_learning_curve(modelDT, metric, "DT-maxDepth=4 leaf_nodes=10", x_train, y_train)
     find_alph( modelDT)
-    modelDT=DecisionTreeClassifier(random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
+    modelDT=DecisionTreeClassifier(criterion =criterion,random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
     create_learning_curve(modelDT, metric, "DT-tuned-postPruned", x_train, y_train)
 
 
@@ -82,14 +83,15 @@ def find_alph(clf):
 # #
 # # #grid search
 def GrSearch():
-    modelDT=DecisionTreeClassifier(random_state=0,ccp_alpha=.003)
-    parameters = {'max_depth': np.arange(1, 40, 1), 'criterion': ('gini', 'entropy', 'log_loss'),
-                  'max_leaf_nodes': np.arange(2, 40, 1)} #, 'ccp_alpha': np.arange(0, .05, 0.01).tolist()
+    modelDT=DecisionTreeClassifier(random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
+    parameters = {'criterion': ('gini', 'entropy', 'log_loss'),
+                  } #, 'ccp_alpha': np.arange(0, .05, 0.01).tolist()
     best_parm = grid_search(parameters, scoring=metric, refit=metric, model=modelDT,x_train=x_train,y_train=y_train)
     print(best_parm)
     return best_parm
 
 if __name__=='__main__':
+    GrSearch()
     DT_experiement()
     modelDT=DecisionTreeClassifier(random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
 

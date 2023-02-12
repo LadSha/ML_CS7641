@@ -19,7 +19,7 @@ x_train,y_train, x_test, y_test = get_data()
 metric = 'f1'
 
 
-def SVM_experiment():
+def experiment():
     svc = SVC(random_state=42)
 
     parameters=[['gamma',[ .006, 0.01,.05,.08, .1,.2,.3,.5,1,5,10,13,16]], ['C', [.1,.5,1,2,3,4,5,10]] ]#],
@@ -74,7 +74,7 @@ def GrSearch():
 
 if __name__ == "__main__":
 
-    SVM_experiment()
+    experiment()
 
 # svc=SVC(random_state=42, gamma=.008, tol=.1,class_weight=None, kernel='linear')
 #

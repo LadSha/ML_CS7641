@@ -10,7 +10,7 @@ metric = 'recall'
 
 
 
-def DT_experiement():
+def experiment():
     modelDT=DecisionTreeClassifier(criterion='entropy',random_state=0)
     # find_alph( modelDT)
     # GrSearch()
@@ -95,7 +95,6 @@ def GrSearch():
 
 if __name__=='__main__':
 
-    DT_experiement()
+    experiment()
     # GrSearch()
-    modelDT=DecisionTreeClassifier(criterion='entropy',random_state=0,max_depth=3, max_leaf_nodes=3,ccp_alpha=.045)
 

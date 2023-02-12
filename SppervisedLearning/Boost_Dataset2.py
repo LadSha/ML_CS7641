@@ -10,7 +10,7 @@ x_train,y_train, x_test, y_test = get_data()
 metric = 'f1'
 
 
-def XGB_experiement():
+def experiment():
 
     n=80
     lr=.8
@@ -48,5 +48,5 @@ def GrSearch():
 
 if __name__ == '__main__':
     # GrSearch()
-    XGB_experiement()
+    experiment()
 

@@ -52,7 +52,7 @@ def plot_loss(history,experiment_name):
 
 
 
-def simple_model():
+def experiment():
     seed(1)
     #simple model
 #make sure to mention batch size, layers, nerons, learning rate , epochs
@@ -83,6 +83,5 @@ def simple_model():
 
 
 if __name__=="__main__":
-    # complex_model()
-    simple_model()
+    experiment()
 #

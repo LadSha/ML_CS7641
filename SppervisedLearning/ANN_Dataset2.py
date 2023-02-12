@@ -60,55 +60,8 @@ def plot_loss(history,experiment_name):
 
 
 
-def simple_model():
+def experiment():
     seed(1)
-    #simple model
-#make sure to mention batch size, layers, nerons, learning rate , epochs
-#
-#     model = Sequential()
-#     model.add(Dense(2,input_dim=X_train.shape[1], activation='relu'))
-#     model.add(Dense(1))
-#     model.add(Activation('sigmoid'))
-#     opt = keras.optimizers.Adam()#
-#     model.compile(loss='binary_crossentropy',
-#                   optimizer=opt,  # also try adam
-#                   metrics=[ "Recall"])#f1_m
-#     # class_weights = {0: .7, 1: 1}
-#     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=100)
-#
-#     history = model.fit(X_train, y_train, verbose=1, epochs=1000, batch_size=32,
-#                         validation_data=(X_val, y_val),callbacks=[es])
-#     #
-#     _,f1_score= model.evaluate(X_test, y_test, verbose=0)
-#     # print(f1_score)
-#     l, acc = model.evaluate(X_test, y_test)
-#     print(history.history)
-#     # print("Accuracy = ", (acc * 100.0), "%")
-#     plot_loss(history,"1layer-2node")
-# #dropout
-#     model = Sequential()
-#     model.add(Dense(2, input_dim=X_train.shape[1], activation='relu'))
-#     model.add(Dropout(0.05))
-#     model.add(Dense(1))
-#     model.add(Activation('sigmoid'))
-#     opt = keras.optimizers.Adam(learning_rate=.001)  #
-#     model.compile(loss='binary_crossentropy',
-#                   optimizer=opt,  # also try adam
-#                   metrics=["Recall"])  # f1_m
-#     # class_weights = {0: .7, 1: 1}
-#     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=100)
-#
-#     history = model.fit(X_train, y_train, verbose=1, epochs=1000, batch_size=32,
-#                         validation_data=(X_val, y_val), callbacks=[es])
-#     #
-#     _, f1_score = model.evaluate(X_test, y_test, verbose=0)
-#     # print(f1_score)
-#     l, acc = model.evaluate(X_test, y_test)
-#     print(history.history)
-#     # print("Accuracy = ", (acc * 100.0), "%")
-#     plot_loss(history, "1layer-2node-.05dropout")
-
-
 
     model = Sequential()
     nodes=4
@@ -135,29 +88,10 @@ def simple_model():
     # print("Accuracy = ", (acc * 100.0), "%")
     plot_loss(history, f"1layer-{nodes}node-{dropout}dropout")
 
-    # model = Sequential()
-    # model.add(Dense(1,input_dim=X_train.shape[1], activation='relu'))
-    # model.add(Dense(1))
-    # model.add(Activation('sigmoid'))
-    # opt = keras.optimizers.Adam()#
-    # model.compile(loss='binary_crossentropy',
-    #               optimizer=opt,  # also try adam
-    #               metrics=[ "Recall"])#f1_m
-    # # class_weights = {0: .7, 1: 1}
-    # es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=100)
-    #
-    # history = model.fit(X_train, y_train, verbose=1, epochs=1000, batch_size=32,
-    #                     validation_data=(X_val, y_val),callbacks=[es])
-    # #
-    # _,f1_score= model.evaluate(X_test, y_test, verbose=0)
-    # # print(f1_score)
-    # l, acc = model.evaluate(X_test, y_test)
-    # print(history.history)
-    # print("Accuracy = ", (acc * 100.0), "%")
-    # plot_loss(history,"1layer-1node")
+
 
 
 
 if __name__=="__main__":
     # complex_model()
-    simple_model()
+    experiment()

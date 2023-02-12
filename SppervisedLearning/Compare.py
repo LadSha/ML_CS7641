@@ -133,6 +133,6 @@ def second_dataset():
     display(result_pd)
 
 if __name__=="__main__":
-    # first_dataset()
+    first_dataset()
     second_dataset()
 

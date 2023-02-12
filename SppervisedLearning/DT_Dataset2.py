@@ -10,7 +10,7 @@ metric = 'f1'
 
 
 
-def DT_experiement():
+def experiment():
     criterion = 'entropy'
     modelDT=DecisionTreeClassifier(random_state=0, criterion =criterion )
     # find_alph( modelDT)
@@ -91,7 +91,6 @@ def GrSearch():
     return best_parm
 
 if __name__=='__main__':
-    GrSearch()
-    DT_experiement()
-    modelDT=DecisionTreeClassifier(criterion="entropy",random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
+    # GrSearch()
+    experiment()
 

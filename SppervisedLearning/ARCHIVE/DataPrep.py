@@ -3,7 +3,7 @@ from sklearn.preprocessing import OneHotEncoder,LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
 
 def get_data():
-    dataset = pd.read_csv(f'../Data/mushrooms.csv')
+    dataset = pd.read_csv(f'../../Data/mushrooms.csv')
     y_train = dataset['class']
     x_train = dataset.drop(labels=['class'], axis=1)
 

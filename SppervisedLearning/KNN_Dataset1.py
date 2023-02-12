@@ -8,7 +8,7 @@ from IPython.display import display
 from DataPrep1 import get_data
 from HelperFunctions import prepare_val_curve,grid_search
 import pandas as pd
-from sklearn.model_selection import GridSearchCV
+
 
 
 x_train,y_train, x_test, y_test = get_data()
@@ -38,7 +38,7 @@ def create_learning_curve(k, neigh, weights):
     plt.show()
 
 
-def KNN_experiment():
+def experiment():
     # GS suggested  distance: {'algorithm': 'auto', 'metric': 'minkowski', 'n_neighbors': 2, 'weights': 'distance'}
     # # parameters = {'n_neighbors': np.arange(7, 45, 2) , 'weights':['uniform', 'distance'], 'metric':['manhattan','minkowski','euclidean'], 'algorithm':['auto', 'ball_tree','kd_tree','brute'],'p':np.arange(1,10,1)}
     #
@@ -119,6 +119,6 @@ def KNN_experiment():
 
 
 if __name__ == "__main__":
-    KNN_experiment()
-    neigh = KNeighborsClassifier(n_neighbors=10, weights='uniform')
+    experiment()
+
 

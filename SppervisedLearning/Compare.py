@@ -26,83 +26,113 @@ from sklearn.model_selection import KFold
 from DataPrep2 import get_data
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from HelperFunctions import custom_f1, f1_m
+from HelperFunctions import  f1_m
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from numpy.random import seed
 import tensorflow as tf
+from IPython.display import display
 
-x_train,y_train, x_test, y_test = getData1()
-
-
-DT1= DecisionTreeClassifier(criterion='entropy',random_state=0,max_depth=3, max_leaf_nodes=3,ccp_alpha=.045)
-SVM1 = SVC(random_state=42, kernel= 'linear', gamma=.05,C=.1)
-boost1 = AdaBoostClassifier(n_estimators=100,learning_rate=1.8, random_state=42,estimator=DecisionTreeClassifier(random_state=0,max_depth=4)) #
-
-knn1 =  KNeighborsClassifier(n_neighbors=10, weights='uniform')
+def first_dataset():
+    x_train,y_train, x_test, y_test = getData1()
 
 
-models=[DT1,SVM1, boost1, knn1]
+    DT1= DecisionTreeClassifier(criterion='entropy',random_state=0,max_depth=3, max_leaf_nodes=3,ccp_alpha=.045)
+    SVM1 = SVC(random_state=42, kernel= 'linear', gamma=.05,C=.1)
+    boost1 = AdaBoostClassifier(n_estimators=100,learning_rate=1.8, random_state=42,estimator=DecisionTreeClassifier(random_state=0,max_depth=4)) #
 
-result=[]
-for model in models:
+    knn1 =  KNeighborsClassifier(n_neighbors=10, weights='uniform')
+
+
+    models=[DT1,SVM1, boost1, knn1]
+
+    result=[]
+    for model in models:
+        t1=time.time()
+        clf = model.fit(x_train,y_train)
+        pred=clf.predict(x_test)
+        t2=time.time()
+        delta=t2-t1
+        result.append([model.__class__.__name__,recall_score(y_test, pred),delta])
+
     t1=time.time()
-    clf = model.fit(x_train,y_train)
-    pred=clf.predict(x_test)
+    nodes = 4
+
+    model = Sequential()
+    model.add(Dense(nodes, input_dim=x_train.shape[1], activation='relu'))
+
+    model.add(Dense(1))
+    model.add(Activation('sigmoid'))
+    opt = keras.optimizers.Adam()  #
+    model.compile(loss='binary_crossentropy',
+                  optimizer=opt,  # also try adam
+                  metrics=["Recall"])  # f1_m
+
+
+    history = model.fit(x_train, y_train, verbose=1, epochs=500, batch_size=64)
+
+    _, scor=model.evaluate(x_test,y_test)
     t2=time.time()
     delta=t2-t1
-    result.append(model.__class__.__name__,recall_score(y_test, pred),delta)
-result_pd=pd.DataFrame(result,columns=["model",'score','run_time'])
+
+    result.append([model.__class__.__name__,scor,delta])
+
+    result_pd=pd.DataFrame(result,columns=["model",'score','run_time'])
+
+    result_pd["dataset"] = 1
+    display(result_pd)
+
+#second dataset
+def second_dataset():
+    x_train,y_train, x_test, y_test = getData2()
+    result=[]
+    DT2 = DecisionTreeClassifier(criterion="entropy",random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
+    SVM2 =SVC(random_state=42, gamma=1, kernel='linear')
+    knn2 = KNeighborsClassifier(n_neighbors=30, weights='uniform',metric='euclidean')
+    boost2 = AdaBoostClassifier(n_estimators=80,learning_rate=.8, random_state=42,estimator=DecisionTreeClassifier(random_state=0)) #
+
+    models=[DT2,SVM2, boost2, knn2]
+    x_train,y_train, x_test, y_test = getData1()
+    result=[]
+    for model in models:
+        t1=time.time()
+        clf = model.fit(x_train,y_train)
+        pred=clf.predict(x_test)
+        t2=time.time()
+        delta=t2-t1
+        result.append([model.__class__.__name__,recall_score(y_test, pred),delta])
+    result_pd=pd.DataFrame(result,columns=["model",'score','run_time'])
 
 
 
+    model = Sequential()
+    nodes = 4
+    dropout = .16
+    model.add(Dense(nodes, input_dim=x_train.shape[1], activation='relu'))
+    model.add(Dropout(dropout))
+
+    model.add(Dense(1))
+    model.add(Activation('sigmoid'))
+    opt = keras.optimizers.Adam()  #
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+                  optimizer=opt,  # also try adam
+                  metrics=[f1_m])  # f1_m
 
 
-
-
-result_pd["dataset"] = 1
-
-
-x_train,y_train, x_test, y_test = getData2()
-result=[]
-DT2 = DecisionTreeClassifier(criterion="entropy",random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
-SVM2 =SVC(random_state=42, gamma=1, kernel='linear')
-knn2 = KNeighborsClassifier(n_neighbors=30, weights='uniform',metric='euclidean')
-boost2 = AdaBoostClassifier(n_estimators=80,learning_rate=.8, random_state=42,estimator=DecisionTreeClassifier(random_state=0)) #
-
-models=[DT2,SVM2, boost2, knn2]
-x_train,y_train, x_test, y_test = getData1()
-result=[]
-for model in models:
-    t1=time.time()
-    clf = model.fit(x_train,y_train)
-    pred=clf.predict(x_test)
+    history = model.fit(x_train, y_train, verbose=1, epochs=1000, batch_size=64)
+    #
+    _, scor=model.evaluate(x_test,y_test)
     t2=time.time()
     delta=t2-t1
-    result.append(model.__class__.__name__,recall_score(y_test, pred),delta)
-result_pd=pd.DataFrame(result,columns=["model",'score','run_time'])
 
-model = Sequential()
-nodes=4
-dropout="no "
+    result.append([model.__class__.__name__,scor,delta])
 
-model.add(Dense(nodes, input_dim=x_train.shape[1], activation='relu'))
-# model.add(Dropout(dropout))
-
-model.add(Dense(1))
-model.add(Activation('sigmoid'))
-opt = keras.optimizers.Adam()  #
-model.compile(loss =tf.keras.losses.BinaryCrossentropy(from_logits=True),
-              optimizer=opt,  # also try adam
-              metrics=["Recall"])  # f1_m
-# class_weights = {0: .7, 1: 1}
-es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=100)
-
-history = model.fit(x_train, y_train, verbose=1, epochs=1000, batch_size=64,callbacks=[es])
-#
-_, f1_score = model.evaluate(x_test, y_test, verbose=0)
+    result_pd=pd.DataFrame(result,columns=["model",'score','run_time'])
 
 
+    result_pd["dataset"] = 2
+    display(result_pd)
 
+if __name__=="__main__":
+    # first_dataset()
+    second_dataset()
 
-
-result_pd["dataset"] = 2

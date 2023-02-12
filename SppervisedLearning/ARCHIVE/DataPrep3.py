@@ -5,7 +5,7 @@ from IPython.display import display
 from sklearn.preprocessing import MinMaxScaler
 
 def get_data():
-    df = pd.read_csv(f'../Data/winequalityN.csv')
+    df = pd.read_csv(f'../../Data/winequalityN.csv')
 #Refernece https://www.geeksforgeeks.org/wine-quality-prediction-machine-learning/
     for col in df.columns:
         if df[col].isnull().sum() > 0:

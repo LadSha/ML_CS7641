@@ -18,7 +18,7 @@ from sklearn.datasets import make_classification
 # x_train, x_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
 # def prepare_data(dataset_name):
-dataset = pd.read_csv(f'../Data/mushrooms.csv')
+dataset = pd.read_csv(f'../../Data/mushrooms.csv')
 y_train = dataset['class']
 x_train = dataset.drop(labels=['class'], axis=1)
 

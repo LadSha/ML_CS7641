@@ -7,7 +7,9 @@ from sklearn.model_selection import LearningCurveDisplay, ShuffleSplit
 from sklearn.model_selection import learning_curve
 from sklearn import neural_network
 import time
-
+from sklearn.model_selection import cross_validate, StratifiedKFold
+import pandas as pd
+from IPython.display import display
 from keras import backend as K
 
 def prepare_val_curve(model,param_name,param_range,scoring, algorithm_name,x_train,y_train):
@@ -75,12 +77,12 @@ def create_learning_curve(estimator,metric,title,x_train,y_train):
         "score_name": metric,
     }
 
-
     LearningCurveDisplay.from_estimator(estimator, **common_params, ax=ax)
     handles, label = ax.get_legend_handles_labels()
     ax.legend(handles[:2], ["Training Score", "Test Score"])
     ax.set_title(f" {estimator.__class__.__name__} {title}")
     plt.show()
+
 
 def grid_search(parameters, scoring, refit, model,x_train,y_train):
 
@@ -108,3 +110,12 @@ def f1_m(y_true, y_pred):
     precision = precision_m(y_true, y_pred)
     recall = recall_m(y_true, y_pred)
     return 2*((precision*recall)/(precision+recall+K.epsilon()))
+
+def get_val_scores(model,x_train,y_train,metric,n_folds=5):
+    skf = StratifiedKFold(n_splits=n_folds, shuffle=True)
+    cv_results = cross_validate(estimator=model, X=x_train, y=y_train, cv=skf, return_train_score=True,
+                                scoring=[metric])
+    metrics = {'mean_' + k: np.mean(v) for k, v in cv_results.items()}  # if k not in ["fit_time", "score_time"]
+
+
+    return (metrics)

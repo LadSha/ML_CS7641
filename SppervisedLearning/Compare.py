@@ -26,15 +26,16 @@ from sklearn.model_selection import KFold
 from DataPrep2 import get_data
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from HelperFunctions import  f1_m
+from HelperFunctions import  f1_m, get_val_scores
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from numpy.random import seed
 import tensorflow as tf
 from IPython.display import display
 
+
 def first_dataset():
     x_train,y_train, x_test, y_test = getData1()
-
+    metric="recall"
 
     DT1= DecisionTreeClassifier(criterion='entropy',random_state=0,max_depth=3, max_leaf_nodes=3,ccp_alpha=.045)
     SVM1 = SVC(random_state=42, kernel= 'linear', gamma=.05,C=.1)
@@ -44,21 +45,27 @@ def first_dataset():
 
 
     models=[DT1,SVM1, boost1, knn1]
-
-    result=[]
+    train_result=[]
+    test_result=[]
     for model in models:
         t1=time.time()
         clf = model.fit(x_train,y_train)
-        pred=clf.predict(x_test)
         t2=time.time()
-        delta=t2-t1
-        result.append([model.__class__.__name__,recall_score(y_test, pred),delta])
+        pred=clf.predict(x_test)
+        t3=time.time()
+
+        test_result.append([model.__class__.__name__,recall_score(y_test, pred),t2-t1,t3-t2])
+        metrics = get_val_scores(model,x_train,y_train,metric)
+        train_result.append([model.__class__.__name__, metrics[f"mean_test_{metric}"], metrics[f"mean_train_{metric}"], metrics["mean_fit_time"],
+             metrics["mean_score_time"]])
+
+    X_tr, X_val, y_tr, y_val = train_test_split(x_train, y_train, test_size=0.15, random_state=0, stratify=y_train)
 
     t1=time.time()
     nodes = 4
-
+    dropout = "no "
     model = Sequential()
-    model.add(Dense(nodes, input_dim=x_train.shape[1], activation='relu'))
+    model.add(Dense(nodes, input_dim=X_tr.shape[1], activation='relu'))
 
     model.add(Dense(1))
     model.add(Activation('sigmoid'))
@@ -66,73 +73,107 @@ def first_dataset():
     model.compile(loss='binary_crossentropy',
                   optimizer=opt,  # also try adam
                   metrics=["Recall"])  # f1_m
+    # class_weights = {0: .7, 1: 1}
+    es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=100)
 
 
-    history = model.fit(x_train, y_train, verbose=1, epochs=500, batch_size=64)
+
+    history = model.fit(X_tr, y_tr, verbose=1, epochs=500, batch_size=64,
+                        validation_data=(X_val, y_val),callbacks=[es])
+    t2=time.time()
 
     _, scor=model.evaluate(x_test,y_test)
-    t2=time.time()
-    delta=t2-t1
+    t3=time.time()
 
-    result.append([model.__class__.__name__,scor,delta])
+    train_result.append([model.__class__.__name__, np.mean(history.history["val_recall"]), np.mean(history.history["recall"]),
+                         "-",
+                         "-"])
 
-    result_pd=pd.DataFrame(result,columns=["model",'score','run_time'])
+    test_result.append([model.__class__.__name__,scor,t2-t1,t3-t2])
 
-    result_pd["dataset"] = 1
-    display(result_pd)
+    result_pd_test=pd.DataFrame(test_result,columns=["model",'test_score',"train_time","score_time"])
+
+    result_pd_test["dataset"] = 1
+    print("    unseen data results")
+    display(result_pd_test)
+
+    print("    cross validation result")
+    display(pd.DataFrame(train_result,
+                             columns=["model", f"val_{metric}", f"train_{metric}", "fit_time", "score_time"]))
+
 
 #second dataset
 def second_dataset():
     x_train,y_train, x_test, y_test = getData2()
-    result=[]
+    metric="f1"
+
     DT2 = DecisionTreeClassifier(criterion="entropy",random_state=0,max_depth=4, max_leaf_nodes=10,ccp_alpha=.0025)
     SVM2 =SVC(random_state=42, gamma=1, kernel='linear')
     knn2 = KNeighborsClassifier(n_neighbors=30, weights='uniform',metric='euclidean')
     boost2 = AdaBoostClassifier(n_estimators=80,learning_rate=.8, random_state=42,estimator=DecisionTreeClassifier(random_state=0)) #
 
     models=[DT2,SVM2, boost2, knn2]
-    x_train,y_train, x_test, y_test = getData1()
-    result=[]
+    test_result=[]
+    train_result=[]
     for model in models:
-        t1=time.time()
-        clf = model.fit(x_train,y_train)
-        pred=clf.predict(x_test)
-        t2=time.time()
-        delta=t2-t1
-        result.append([model.__class__.__name__,recall_score(y_test, pred),delta])
-    result_pd=pd.DataFrame(result,columns=["model",'score','run_time'])
+        t1 = time.time()
+        clf = model.fit(x_train, y_train)
+        t2 = time.time()
+        pred = clf.predict(x_test)
+        t3 = time.time()
 
+        test_result.append([model.__class__.__name__, f1_score(y_test, pred), t2 - t1, t3 - t2])
+        metrics = get_val_scores(model, x_train, y_train, metric)
+        train_result.append([model.__class__.__name__, metrics[f"mean_test_{metric}"], metrics[f"mean_train_{metric}"],
+                             metrics["mean_fit_time"],
+                             metrics["mean_score_time"]])
+    X_tr, X_val, y_tr, y_val = train_test_split(x_train, y_train, test_size=0.15, random_state=0, stratify=y_train)
 
-
+    t1 = time.time()
     model = Sequential()
     nodes = 4
     dropout = .16
-    model.add(Dense(nodes, input_dim=x_train.shape[1], activation='relu'))
+    model.add(Dense(nodes, input_dim=X_tr.shape[1], activation='relu'))
     model.add(Dropout(dropout))
 
     model.add(Dense(1))
     model.add(Activation('sigmoid'))
     opt = keras.optimizers.Adam()  #
     model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
-                  optimizer=opt,  # also try adam
+                  optimizer=opt,
                   metrics=[f1_m])  # f1_m
 
 
-    history = model.fit(x_train, y_train, verbose=1, epochs=1000, batch_size=64)
-    #
-    _, scor=model.evaluate(x_test,y_test)
+
+    es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=100)
+
+    history = model.fit(X_tr, y_tr, verbose=1, epochs=1000, batch_size=64,
+                        validation_data=(X_val, y_val), callbacks=[es])
     t2=time.time()
-    delta=t2-t1
 
-    result.append([model.__class__.__name__,scor,delta])
+    _, scor=model.evaluate(x_test,y_test)
+    t3=time.time()
 
-    result_pd=pd.DataFrame(result,columns=["model",'score','run_time'])
+    train_result.append(
+        [model.__class__.__name__, np.mean(history.history["val_f1_m"]), np.mean(history.history["f1_m"]),
+         "-",
+         "-"])
 
+    test_result.append([model.__class__.__name__, scor, t2 - t1, t3 - t2])
 
-    result_pd["dataset"] = 2
-    display(result_pd)
+    result_pd_test = pd.DataFrame(test_result, columns=["model", 'test_score', "train_time", "score_time"])
+
+    result_pd_test["dataset"] = 2
+    print("    unseen data results")
+    display(result_pd_test)
+
+    print("    cross validation result")
+    display(pd.DataFrame(train_result,
+                         columns=["model", f"val_{metric}", f"train_{metric}", "fit_time", "score_time"]))
+
 
 if __name__=="__main__":
+    seed(1)
     first_dataset()
     second_dataset()
 

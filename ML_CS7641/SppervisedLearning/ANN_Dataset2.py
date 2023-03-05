@@ -40,7 +40,7 @@ def plot_loss(history,experiment_name):
     plt.show()
 #
 #
-    recall= history.history[metric]
+
     acc = history.history[f'{metric}']
     val_acc = history.history[f'val_{metric}']
     plt.plot(epochs, acc, 'y', label=f'Training {metric}')

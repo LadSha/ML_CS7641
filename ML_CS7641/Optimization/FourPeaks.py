@@ -181,30 +181,30 @@ def run_tuned_models():
     SEED=42
     problem_name = 'FourPeaks-prob_size=20'
     problem = ContinuousPeaksGenerator.generate(seed=27, size=20)
-    result = pd.DataFrame(columns=["run_time", "final_optimum_value"], index=["RHC","GA","SA","MIMIC"])
-    t0=time()
-    rhc = RHCRunner(problem=problem,
-                    experiment_name="RHC",
-                    output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final",
-                    seed=SEED,
-                    iteration_list=2 ** np.arange(10),
-                    max_attempts=500,
-                    restart_list=[0])
+    result = pd.DataFrame(columns=["run_time", "final_optimum_value"], index=["GA","SA","MIMIC"])
+    # t0=time()
+    # rhc = RHCRunner(problem=problem,
+    #                 experiment_name="RHC",
+    #                 output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final",
+    #                 seed=SEED,
+    #                 iteration_list=2 ** np.arange(10),
+    #                 max_attempts=500,
+    #                 restart_list=[0])
+    #
+    # rhc_run_stats, rhc_run_curves = rhc.run()
+    # t1=time()
+    # result.loc["RHC","run_time"]=t1-t0
+    # result.loc["RHC","final_optimum_value"] = rhc_run_curves["Fitness"].values[-1]
 
-    rhc_run_stats, rhc_run_curves = rhc.run()
-    t1=time()
-    result.loc["RHC","run_time"]=t1-t0
-    result.loc["RHC","final_optimum_value"] = rhc_run_curves["Fitness"].values[-1]
-
-    fig, axes = plt.subplots()
-    plt.plot(rhc_run_curves[rhc_run_curves["Restarts"] == 0]["Fitness"].values, label=f"restarts=0")
-    axes.set_xlabel("Iterations")
-    axes.set_ylabel("Fitness Score")
-    axes.set_title("RHC - Fitness vs Iterations for no. of restarts ({})".format(problem_name))
-    axes.legend(loc="best")
-    axes.grid()
-    plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/rhc.png")
-    plt.show()
+    # fig, axes = plt.subplots()
+    # plt.plot(rhc_run_curves[rhc_run_curves["Restarts"] == 0]["Fitness"].values, label=f"restarts=0")
+    # axes.set_xlabel("Iterations")
+    # axes.set_ylabel("Fitness Score")
+    # axes.set_title("RHC - Fitness vs Iterations for no. of restarts ({})".format(problem_name))
+    # axes.legend(loc="best")
+    # axes.grid()
+    # plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/rhc.png")
+    # plt.show()
 
 
     t0 = time()
@@ -212,9 +212,9 @@ def run_tuned_models():
                   experiment_name="SA_final",
                   output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final",
                   seed=SEED,
-                  iteration_list=2 ** np.arange(13),
-                  max_attempts=500,
-                  temperature_list=[10],
+                  iteration_list=2 ** np.arange(10),
+                  max_attempts=400,
+                  temperature_list=[.01],
                   decay_list=[mlrose_hiive.ExpDecay])
 
     sa_run_stats, sa_run_curves = sa.run()
@@ -223,39 +223,39 @@ def run_tuned_models():
     result.loc["SA","final_optimum_value"] = sa_run_curves["Fitness"].values[-1]
 
     fig, axes = plt.subplots()
-    plt.plot(sa_run_curves["Fitness"].values, label=f"temp=10")
-    axes.set_xlabel("Iterations")
-    axes.set_ylabel("Fitness Score")
-    axes.set_title("SA - Fitness vs Iterations for different temp ({})".format(problem_name))
-    axes.legend(loc="best")
-    axes.grid()
-    plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/sa.png")
-    plt.show()
+    plt.plot(sa_run_curves["Fitness"].values, label=f"SA")
+    # axes.set_xlabel("Iterations")
+    # axes.set_ylabel("Fitness Score")
+    # axes.set_title("SA - Fitness vs Iterations for different temp ({})".format(problem_name))
+    # axes.legend(loc="best")
+    # axes.grid()
+    # plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/sa.png")
+    # plt.show()
 
     t0 = time()
     ga = GARunner(problem=problem,
                          experiment_name="GA_final",
                          output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final",
                          seed=SEED,
-                         iteration_list=2 ** np.arange(13),
-                         max_attempts=500,
+                         iteration_list=2 ** np.arange(10),
+                         max_attempts=400,
                          population_sizes=[200],
                          mutation_rates=[0.3])
     ga_run_stats, ga_run_curves = ga.run()
     t1 = time()
     result.loc["GA", "run_time"] = t1 - t0
     result.loc["GA","final_optimum_value"] = ga_run_curves["Fitness"].values[-1]
-    fig, axes = plt.subplots()
-    plt.plot(ga_run_curves["Fitness"].values, label=f"Population Size=200,mutation_rates=0.3")
+    # fig, axes = plt.subplots()
+    plt.plot(ga_run_curves["Fitness"].values, label=f"GA")
 
-    axes.set_xlabel("Iterations")
-    plt.xlim(left=0, right=1000)
-    axes.set_ylabel("Fitness Score")
-    axes.set_title("GA - Fitness vs Iterations for different mutate rate ({})".format(problem_name))
-    axes.legend(loc="best")
-    axes.grid()
-    plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/ga.png")
-    plt.show()
+    # axes.set_xlabel("Iterations")
+    # plt.xlim(left=0, right=1000)
+    # axes.set_ylabel("Fitness Score")
+    # axes.set_title("GA - Fitness vs Iterations for different mutate rate ({})".format(problem_name))
+    # axes.legend(loc="best")
+    # axes.grid()
+    # plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/ga.png")
+    # plt.show()
 
     t0 = time()
     mmc = MIMICRunner(problem=problem,
@@ -263,26 +263,27 @@ def run_tuned_models():
                       output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final",
                       seed=SEED,
                       iteration_list=2 ** np.arange(10),
-                      population_sizes=[500],
-                      max_attempts=500,
+                      population_sizes=[200],
+                      max_attempts=400,
                       keep_percent_list=[0.25],
                       use_fast_mimic=True)
     mimic_run_stats, mimic_run_curves = mmc.run()
     t1 = time()
     result.loc["MIMIC", "run_time"] = t1 - t0
     result.loc["MIMIC","final_optimum_value"] = mimic_run_curves["Fitness"].values[-1]
-    fig, axes = plt.subplots()
+    # fig, axes = plt.subplots()
     plt.plot(
         mimic_run_curves[
-            "Fitness"].values, label="Keep %=0.25, population_size=500")
+            "Fitness"].values, label="Mimic")
     axes.set_xlabel("Iterations")
     axes.set_ylabel("Fitness Score")
-    axes.set_title("MIMIC - Fitness vs Iterations for different keep % ({})".format(problem_name))
+    axes.set_title("MIMIC - Fitness vs Iterations ({})".format(problem_name))
     axes.legend(loc="best")
     axes.grid()
-    plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/mmc.png")
+    plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/{problem_name}.png")
     plt.show()
     result.to_excel(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/result.xlsx")
     print(result)
 
-
+if __name__=="__main__":
+    run_tuned_models()

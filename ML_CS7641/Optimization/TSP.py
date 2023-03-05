@@ -187,12 +187,14 @@ def run_experiments():
 def run_tuned_models():
 
     SEED=42
-    coords_list = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0),
+    coords_list = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0),
                    (6, 1), (6, 2), (6, 3), (6, 4), (6, 5), (6, 6),
                    (5, 6), (4, 6), (3, 6), (2, 6), (1, 6), (0, 6),
                    (0, 5), (0, 4), (0, 3), (0, 2),
+                   (1, 2), (2, 2), (3, 2), (4, 2),
+                   (4, 3), (4, 4), (3, 4), (2, 4), (2, 3)
                    ]
-    problem_name = 'TSP_prob_size=22'
+    problem_name = 'TSP_prob_size=32'
 
     problem = TSPOpt(maximize=True, length=len(coords_list), coords=coords_list)
     result = pd.DataFrame(columns=["run_time", "final_optimum_value"], index=["GA","SA","MIMIC"])
@@ -227,7 +229,7 @@ def run_tuned_models():
                   output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final",
                   seed=SEED,
                   iteration_list=2 ** np.arange(10),
-                  max_attempts=300,
+                  max_attempts=400,
                   temperature_list=[.01],
                   decay_list=[mlrose_hiive.ExpDecay])
 
@@ -252,7 +254,7 @@ def run_tuned_models():
                          output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final",
                          seed=SEED,
                          iteration_list=2 ** np.arange(10),
-                         max_attempts=300,
+                         max_attempts=400,
                          population_sizes=[200],
                          mutation_rates=[0.3])
     ga_run_stats, ga_run_curves = ga.run()
@@ -278,7 +280,7 @@ def run_tuned_models():
                       seed=SEED,
                       iteration_list=2 ** np.arange(10),
                       population_sizes=[400],
-                      max_attempts=300,
+                      max_attempts=400,
                       keep_percent_list=[0.75],
                       use_fast_mimic=True)
     mimic_run_stats, mimic_run_curves = mmc.run()
@@ -298,6 +300,13 @@ def run_tuned_models():
     plt.show()
     result.to_excel(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/result.xlsx")
     print(result)
-
+    plt.plot(sa_run_curves["FEvals"].values, label=f"SA-FEvals")
+    plt.plot(ga_run_curves["FEvals"].values, label=f"GA-FEvals")
+    plt.plot(mimic_run_curves["FEvals"].values, label=f"Mimic-FEvals")
+    plt.title("Function Evaluation")
+    plt.legend()
+    plt.xlabel("Iterations")
+    plt.ylabel(f"Function Evaluation")
+    plt.show()
 if __name__=="__main__":
     run_tuned_models()

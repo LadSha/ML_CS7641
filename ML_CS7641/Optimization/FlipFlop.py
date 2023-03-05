@@ -163,12 +163,12 @@ def experiment(problem, problem_name):
 
 def run_experiments():
     SEED = 42
-    problem_name = 'FilpFlop-prob_size=100'
-    problem = FlipFlopGenerator.generate(seed=27, size=100)
-    experiment(problem,problem_name)
+    # problem_name = 'FilpFlop-prob_size=100'
+    # problem = FlipFlopGenerator.generate(seed=27, size=100)
+    # experiment(problem,problem_name)
 
-    problem_name = 'FilpFlop-prob_size=500'
-    problem = FlipFlopGenerator.generate(seed=27, size=500)
+    problem_name = 'FilpFlop-prob_size=50'
+    problem = FlipFlopGenerator.generate(seed=27, size=50)
     experiment(problem,problem_name)
 
 def run_tuned_models():
@@ -289,4 +289,4 @@ def run_tuned_models():
     plt.ylabel("Function Evaluation")
     plt.show()
 if __name__=="__main__":
-    run_tuned_models()
+    run_experiments()

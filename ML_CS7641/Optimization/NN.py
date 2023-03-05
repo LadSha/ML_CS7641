@@ -28,20 +28,21 @@ x_train,y_train, x_test, y_test = get_data()
 # def nn_model():
 
 result=[]
+
 # grid_search = {
-#     "max_iters": [1000],
-#     "learning_rate_init": [0.1],
-#     "activation": [mlrose_hiive.neural.activation.relu],
+#     "max_iters": [5000],
+#     "learning_rate_init": [ .5],
+#     "activation": [mlrh.neural.activation.relu],
 #     "is_classifier": [True],
-#     "mutation_prob": [0.25],
-#     "pop_size": [ 500]
+#     "temperature_list" :[.01]
 # }
-# t0 = time()
+#
+# t0=time()
 # runner = mlrose_hiive.NNGSRunner(x_train=x_train, y_train=y_train,
 #                            x_test=x_test, y_test=y_test,
-#                            experiment_name="GA_NN",
-#                            output_directory="nn_genetic_algorithm/",
-#                            algorithm=mlrose_hiive.algorithms.genetic_alg,
+#                            experiment_name="NN_SA",
+#                            output_directory="nn_simulated_annealing/",
+#                            algorithm=mlrose_hiive.algorithms.sa.simulated_annealing,
 #                            grid_search_parameters=grid_search,
 #                            iteration_list = [1, 10, 50, 100, 250, 500, 1000, 2500, 5000, 10000],
 #                            hidden_layer_sizes=[[4]],
@@ -54,42 +55,74 @@ result=[]
 #                            n_jobs=-1
 #                           )
 # run_stats, curves, cv_results, best_est = runner.run()
+# t1=time()
+# print(best_est)
+# fig, axes = plt.subplots()
+# plt.plot(curves["Fitness"].values, label=f"SA-NN")
+# axes.set_xlabel("Iterations")
+# axes.set_ylabel("Loss")
+# axes.set_title("Loss vs Iterations ({})".format("SA_NN"))
+# axes.legend(loc="best")
+# axes.grid()
+# plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/nn_genetic_algorithm/SA-loss.png")
+# result.append(["SA_NN",t1-t0])
+# plt.show()
 #
+# grid_search = {
+#     "max_iters": [1000],
+#     "activation": [mlrose_hiive.neural.activation.relu],
+#     "is_classifier": [True],
+#
+# }
+#
+# t0=time()
+# runner = mlrose_hiive.NNGSRunner(x_train=x_train, y_train=y_train,
+#                            x_test=x_test, y_test=y_test,
+#                            experiment_name="full_grid_search",
+#                            output_directory="nn_randomized_hill_climbing/",
+#                            algorithm=mlrose_hiive.algorithms.random_hill_climb,
+#                            grid_search_parameters=grid_search,
+#                            iteration_list = [1, 10, 50, 100, 250, 500, 1000, 2500, 5000, 10000],
+#                            hidden_layer_sizes=[[4]],
+#                            bias=True,
+#                            early_stopping=True,
+#                            clip_max=1,
+#                            max_attempts=100,
+#                            generate_curves=True,
+#                            seed=42,
+#                            n_jobs=-1
+#                           )
 # run_stats, curves, cv_results, best_est = runner.run()
 # t1=time()
 # fig, axes = plt.subplots()
-# plt.plot(curves["Fitness"].values, label=f"GA-NN")
+# plt.plot(curves["Fitness"].values, label=f"RHC-NN")
 # axes.set_xlabel("Iterations")
 # axes.set_ylabel("Loss")
-# axes.set_title("Fitness vs Iterations ({})".format("GA_NN"))
+# axes.set_title("Loss vs Iterations ({})".format("RHC_NN"))
 # axes.legend(loc="best")
 # axes.grid()
-# plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/nn_genetic_algorithm/GA-loss.png")
-# result.append(["GA_NN",t1-t0])
+# plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/nn_genetic_algorithm/RHC-loss.png")
+# result.append(["RHC_NN",t1-t0])
 # plt.show()
+
 grid_search = {
-    "max_iters": [2500, 5000, 10000, 25000, 50000],
-    "learning_rate_init": [0.001, 0.1, 0.5, 1],
-    "hidden_layers_sizes": [[6, 6]],
+    "max_iters": [ 1000],
+    "learning_rate_init": [0.1],
     "activation": [mlrh.neural.activation.relu],
     "is_classifier": [True],
-    "schedule": [mlrh.GeomDecay(1), mlrh.GeomDecay(10), mlrh.GeomDecay(100),
-                 mlrh.GeomDecay(5), mlrh.GeomDecay(50), mlrh.GeomDecay(500),
-                 mlrh.ArithDecay(1), mlrh.ArithDecay(10), mlrh.ArithDecay(100),
-                 mlrh.ArithDecay(5), mlrh.ArithDecay(50), mlrh.ArithDecay(500),
-                 mlrh.ExpDecay(1), mlrh.ExpDecay(10), mlrh.ExpDecay(100),
-                 mlrh.ExpDecay(5), mlrh.ExpDecay(50), mlrh.ExpDecay(500)]
+    "mutation_prob": [0.25],
+    "pop_size": [400]
 }
 
 t0=time()
-runner = mlrose_hiive.NNGSRunner(x_train=x_train, y_train=y_train,
+runner = mlrh.NNGSRunner(x_train=x_train, y_train=y_train,
                            x_test=x_test, y_test=y_test,
-                           experiment_name="NN_SA",
-                           output_directory="nn_simulated_annealing/",
-                           algorithm=mlrose_hiive.algorithms.sa.simulated_annealing,
+                           experiment_name="full_grid_search",
+                           output_directory="nn_genetic_algorithm/",
+                           algorithm=mlrh.algorithms.genetic_alg,
                            grid_search_parameters=grid_search,
                            iteration_list = [1, 10, 50, 100, 250, 500, 1000, 2500, 5000, 10000],
-                           hidden_layer_sizes=[[4]],
+                           hidden_layer_sizes=[[6,6]],
                            bias=True,
                            early_stopping=True,
                            clip_max=1,
@@ -100,53 +133,19 @@ runner = mlrose_hiive.NNGSRunner(x_train=x_train, y_train=y_train,
                           )
 run_stats, curves, cv_results, best_est = runner.run()
 t1=time()
-print(best_est)
+
 fig, axes = plt.subplots()
-plt.plot(curves["Fitness"].values, label=f"SA-NN")
+plt.plot(curves["Fitness"].values, label=f"GA-NN")
 axes.set_xlabel("Iterations")
 axes.set_ylabel("Loss")
-axes.set_title("Fitness vs Iterations ({})".format("SA_NN"))
+axes.set_title("Loss vs Iterations ({})".format("GA_NN"))
 axes.legend(loc="best")
 axes.grid()
-plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/nn_genetic_algorithm/SA-loss.png")
-result.append(["SA_NN",t1-t0])
+plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/nn_genetic_algorithm/GA-loss.png")
+result.append(["GA_NN",t1-t0])
 plt.show()
-
-grid_search = {
-    "max_iters": [1000],
-    "activation": [mlrose_hiive.neural.activation.relu],
-    "is_classifier": [True],
-}
-
-t0=time()
-runner = mlrose_hiive.NNGSRunner(x_train=x_train, y_train=y_train,
-                           x_test=x_test, y_test=y_test,
-                           experiment_name="full_grid_search",
-                           output_directory="nn_randomized_hill_climbing/",
-                           algorithm=mlrose_hiive.algorithms.random_hill_climb,
-                           grid_search_parameters=grid_search,
-                           iteration_list = [1, 10, 50, 100, 250, 500, 1000, 2500, 5000, 10000],
-                           hidden_layer_sizes=[[4]],
-                           bias=True,
-                           early_stopping=True,
-                           clip_max=1,
-                           max_attempts=100,
-                           generate_curves=True,
-                           seed=42,
-                           n_jobs=-1
-                          )
-run_stats, curves, cv_results, best_est = runner.run()
-t1=time()
-fig, axes = plt.subplots()
-plt.plot(curves["Fitness"].values, label=f"RHC-NN")
-axes.set_xlabel("Iterations")
-axes.set_ylabel("Loss")
-axes.set_title("Fitness vs Iterations ({})".format("RHC_NN"))
-axes.legend(loc="best")
-axes.grid()
-plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/nn_genetic_algorithm/RHC-loss.png")
-result.append(["RHC_NN",t1-t0])
-plt.show()
+print(result)
+result.to_excel(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/NN_results.xlsx")
 
 # nn_model1 = mlrose.NeuralNetwork(hidden_nodes = [11,4,1], activation = 'relu', \
 #                                  algorithm = 'random_hill_climb', max_iters = 1000, \

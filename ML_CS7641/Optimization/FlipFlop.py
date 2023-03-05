@@ -289,4 +289,4 @@ def run_tuned_models():
     plt.ylabel("Function Evaluation")
     plt.show()
 if __name__=="__main__":
-    run_experiments()
+    run_tuned_models()

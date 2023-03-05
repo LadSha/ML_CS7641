@@ -231,7 +231,10 @@ def run_tuned_models():
 
     print(confusion_matrix(y_pred,y_val))
 
-    print(pd.DataFrame(result,columns=["algorithm", "f1_validation", "f1_test", "train_time", "score_time"]))
+    df = (pd.DataFrame(result,columns=["algorithm", "f1_validation", "f1_test", "train_time", "score_time"]))
+    print(df)
+    df.to_excel(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/result_NN.xlsx")
+
     # fit_curve = nn_model_rhc.fitness_curve
     # plt.plot(fit_curve[:,0])
     # plt.xlabel("Iterations")

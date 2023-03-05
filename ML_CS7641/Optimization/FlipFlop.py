@@ -174,8 +174,8 @@ def run_experiments():
 def run_tuned_models():
 
     SEED = 42
-    problem_name = 'FilpFlop-prob_size=50'
-    problem = FlipFlopGenerator.generate(seed=27, size=50)
+    problem_name = 'FilpFlop-prob_size=150'
+    problem = FlipFlopGenerator.generate(seed=27, size=150)
     result = pd.DataFrame(columns=["run_time", "final_optimum_value"], index=["GA","SA","MIMIC"])
     # t0=time()
     # rhc = RHCRunner(problem=problem,
@@ -213,6 +213,7 @@ def run_tuned_models():
                   decay_list=[mlrose_hiive.ExpDecay])
 
     sa_run_stats, sa_run_curves = sa.run()
+
     t1 = time()
     result.loc["SA", "run_time"] = t1 - t0
     result.loc["SA","final_optimum_value"] = sa_run_curves["Fitness"].values[-1]
@@ -272,13 +273,20 @@ def run_tuned_models():
             "Fitness"].values, label="Mimic")
     axes.set_xlabel("Iterations")
     axes.set_ylabel("Fitness Score")
-    axes.set_title("MIMIC - Fitness vs Iterations ({})".format(problem_name))
+    axes.set_title(" Fitness vs Iterations ({})".format(problem_name))
     axes.legend(loc="best")
     axes.grid()
     plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/{problem_name}.png")
     plt.show()
     result.to_excel(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/result-{problem_name}.xlsx")
     print(result)
-
+    plt.plot(sa_run_curves["FEvals"].values, label=f"SA-FEvals")
+    plt.plot(ga_run_curves["FEvals"].values, label=f"GA-FEvals")
+    plt.plot(mimic_run_curves["FEvals"].values, label=f"Mimic-FEvals")
+    plt.title("Function Evaluation")
+    plt.legend()
+    plt.xlabel("Iterations")
+    plt.ylabel("Function Evaluation")
+    plt.show()
 if __name__=="__main__":
     run_tuned_models()

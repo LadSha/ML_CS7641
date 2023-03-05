@@ -179,8 +179,8 @@ def run_experiments():
 def run_tuned_models():
 
     SEED=42
-    problem_name = 'FourPeaks-prob_size=20'
-    problem = ContinuousPeaksGenerator.generate(seed=27, size=20)
+    problem_name = 'FourPeaks-prob_size=100'
+    problem = ContinuousPeaksGenerator.generate(seed=27, size=100)
     result = pd.DataFrame(columns=["run_time", "final_optimum_value"], index=["GA","SA","MIMIC"])
     # t0=time()
     # rhc = RHCRunner(problem=problem,
@@ -264,7 +264,7 @@ def run_tuned_models():
                       seed=SEED,
                       iteration_list=2 ** np.arange(10),
                       population_sizes=[200],
-                      max_attempts=400,
+                      max_attempts=500,
                       keep_percent_list=[0.25],
                       use_fast_mimic=True)
     mimic_run_stats, mimic_run_curves = mmc.run()
@@ -277,13 +277,21 @@ def run_tuned_models():
             "Fitness"].values, label="Mimic")
     axes.set_xlabel("Iterations")
     axes.set_ylabel("Fitness Score")
-    axes.set_title("MIMIC - Fitness vs Iterations ({})".format(problem_name))
+    axes.set_title(" Fitness vs Iterations ({})".format(problem_name))
     axes.legend(loc="best")
     axes.grid()
     plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/{problem_name}.png")
     plt.show()
     result.to_excel(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/result.xlsx")
     print(result)
+    plt.plot(sa_run_curves["FEvals"].values, label=f"SA-FEvals")
+    plt.plot(ga_run_curves["FEvals"].values, label=f"GA-FEvals")
+    plt.plot(mimic_run_curves["FEvals"].values, label=f"Mimic-FEvals")
+    plt.title("Function Evaluation")
+    plt.legend()
+    plt.xlabel("Iterations")
+    plt.ylabel(f"Function Evaluation {problem_name}")
+    plt.show()
 
 if __name__=="__main__":
     run_tuned_models()

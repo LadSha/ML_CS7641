@@ -150,7 +150,7 @@ def second_dataset():
     history = model.fit(X_tr, y_tr, verbose=1, epochs=1000, batch_size=64,
                         validation_data=(X_val, y_val), callbacks=[es])
     t2=time.time()
-
+    print(t2-t1)
     _, scor=model.evaluate(x_test,y_test)
     t3=time.time()
 
@@ -174,6 +174,6 @@ def second_dataset():
 
 if __name__=="__main__":
     seed(1)
-    first_dataset()
+    # first_dataset()
     second_dataset()
 

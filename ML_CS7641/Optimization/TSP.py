@@ -184,8 +184,8 @@ def run_experiments():
     problem = TSPOpt(maximize=True, length=len(coords_list), coords=coords_list)
     experiment(problem, problem_name)
 
-# def run_tuned_models():
-if __name__=="__main__":
+def run_tuned_models():
+
     SEED=42
     coords_list = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0),
                    (6, 1), (6, 2), (6, 3), (6, 4), (6, 5), (6, 6),
@@ -226,9 +226,9 @@ if __name__=="__main__":
                   experiment_name="SA_final",
                   output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final",
                   seed=SEED,
-                  iteration_list=2 ** np.arange(13),
+                  iteration_list=2 ** np.arange(11),
                   max_attempts=500,
-                  temperature_list=[5],
+                  temperature_list=[.01],
                   decay_list=[mlrose_hiive.ExpDecay])
 
     sa_run_stats, sa_run_curves = sa.run()
@@ -249,9 +249,9 @@ if __name__=="__main__":
     t0 = time()
     ga = GARunner(problem=problem,
                          experiment_name="GA_final",
-                         output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/final/{problem_name}",
+                         output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final",
                          seed=SEED,
-                         iteration_list=2 ** np.arange(13),
+                         iteration_list=2 ** np.arange(9),
                          max_attempts=500,
                          population_sizes=[200],
                          mutation_rates=[0.3])
@@ -276,7 +276,7 @@ if __name__=="__main__":
                       experiment_name="MIMIC_final",
                       output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final",
                       seed=SEED,
-                      iteration_list=2 ** np.arange(10),
+                      iteration_list=2 ** np.arange(7),
                       population_sizes=[500],
                       max_attempts=500,
                       keep_percent_list=[0.25],
@@ -296,7 +296,8 @@ if __name__=="__main__":
     axes.grid()
     plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/mmc.png")
     plt.show()
-    result.to_excel(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/result.xlsx")
+    result.to_excel(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/result.xlsx")
     print(result)
 
-
+if __name__=="__main__":
+    run_tuned_models()

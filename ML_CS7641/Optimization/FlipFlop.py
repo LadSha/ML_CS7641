@@ -7,7 +7,7 @@ from mlrose_hiive.runners import RHCRunner, SARunner, GARunner, MIMICRunner
 from mlrose_hiive import TSPGenerator,FlipFlopGenerator,FourPeaks
 import matplotlib.pyplot as plt
 from time import time
-
+import pandas as pd
 
 
 def experiment(problem, problem_name):
@@ -126,18 +126,18 @@ def experiment(problem, problem_name):
                       output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}",
                       seed=SEED,
                       iteration_list=2 ** np.arange(10),
-                      population_sizes=[200,300],
+                      population_sizes=[500,300],
                       max_attempts=500,
                       keep_percent_list=[0.25,.5,.75],
                       use_fast_mimic=True)
     mimic_run_stats, mimic_run_curves = mmc.run()
 
     fig, axes = plt.subplots()
-    plt.plot(mimic_run_curves[(mimic_run_curves["Population Size"] == 200) & (mimic_run_curves["Keep Percent"] == 0.25)][
+    plt.plot(mimic_run_curves[(mimic_run_curves["Population Size"] == 300) & (mimic_run_curves["Keep Percent"] == 0.25)][
                  "Fitness"].values, label="Keep %=0.25")
-    plt.plot(mimic_run_curves[(mimic_run_curves["Population Size"] == 200) & (mimic_run_curves["Keep Percent"] == 0.5)][
+    plt.plot(mimic_run_curves[(mimic_run_curves["Population Size"] == 300) & (mimic_run_curves["Keep Percent"] == 0.5)][
                  "Fitness"].values, label="Keep %=0.5")
-    plt.plot(mimic_run_curves[(mimic_run_curves["Population Size"] == 200) & (mimic_run_curves["Keep Percent"] == 0.75)][
+    plt.plot(mimic_run_curves[(mimic_run_curves["Population Size"] == 300) & (mimic_run_curves["Keep Percent"] == 0.75)][
                  "Fitness"].values, label="Keep %=0.75")
     axes.set_xlabel("Iterations")
     axes.set_ylabel("Fitness Score")
@@ -150,8 +150,8 @@ def experiment(problem, problem_name):
     fig, axes = plt.subplots()
     plt.plot(mimic_run_curves[(mimic_run_curves["Population Size"] == 300) & (mimic_run_curves["Keep Percent"] == 0.25)][
                  "Fitness"].values, label="pop_size=300")
-    plt.plot(mimic_run_curves[(mimic_run_curves["Population Size"] == 200) & (mimic_run_curves["Keep Percent"] == 0.25)][
-                 "Fitness"].values, label="pop_size=200")
+    plt.plot(mimic_run_curves[(mimic_run_curves["Population Size"] == 500) & (mimic_run_curves["Keep Percent"] == 0.25)][
+                 "Fitness"].values, label="pop_size=500")
     axes.set_xlabel("Iterations")
     axes.set_ylabel("Fitness Score")
     axes.set_title("MIMIC - Fitness vs Iterations for different keep % ({})".format(problem_name))
@@ -161,7 +161,7 @@ def experiment(problem, problem_name):
     plt.show()
 
 
-if __name__=="__main__":
+def run_experiments():
     SEED = 42
     problem_name = 'FilpFlop-prob_size=100'
     problem = FlipFlopGenerator.generate(seed=27, size=100)
@@ -170,3 +170,114 @@ if __name__=="__main__":
     problem_name = 'FilpFlop-prob_size=500'
     problem = FlipFlopGenerator.generate(seed=27, size=500)
     experiment(problem,problem_name)
+
+if __name__=="__main__":
+    run_experiments()
+def run_tuned_models():
+
+    SEED = 42
+    problem_name = 'FilpFlop-prob_size=100'
+    problem = FlipFlopGenerator.generate(seed=27, size=100)
+    result = pd.DataFrame(columns=["run_time", "final_optimum_value"], index=["RHC","GA","SA","MIMIC"])
+    t0=time()
+    rhc = RHCRunner(problem=problem,
+                    experiment_name="RHC",
+                    output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final",
+                    seed=SEED,
+                    iteration_list=2 ** np.arange(10),
+                    max_attempts=500,
+                    restart_list=[0])
+
+    rhc_run_stats, rhc_run_curves = rhc.run()
+    t1=time()
+    result.loc["RHC","run_time"]=t1-t0
+    result.loc["RHC","final_optimum_value"] = rhc_run_curves["Fitness"].values[-1]
+
+    fig, axes = plt.subplots()
+    plt.plot(rhc_run_curves[rhc_run_curves["Restarts"] == 0]["Fitness"].values, label=f"restarts=0")
+    axes.set_xlabel("Iterations")
+    axes.set_ylabel("Fitness Score")
+    axes.set_title("RHC - Fitness vs Iterations for no. of restarts ({})".format(problem_name))
+    axes.legend(loc="best")
+    axes.grid()
+    plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/rhc.png")
+    plt.show()
+
+
+    t0 = time()
+    sa = SARunner(problem=problem,
+                  experiment_name="SA_final",
+                  output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final",
+                  seed=SEED,
+                  iteration_list=2 ** np.arange(13),
+                  max_attempts=500,
+                  temperature_list=[.01],
+                  decay_list=[mlrose_hiive.ExpDecay])
+
+    sa_run_stats, sa_run_curves = sa.run()
+    t1 = time()
+    result.loc["SA", "run_time"] = t1 - t0
+    result.loc["SA","final_optimum_value"] = sa_run_curves["Fitness"].values[-1]
+
+    fig, axes = plt.subplots()
+    plt.plot(sa_run_curves["Fitness"].values, label=f"temp=5")
+    axes.set_xlabel("Iterations")
+    axes.set_ylabel("Fitness Score")
+    axes.set_title("SA - Fitness vs Iterations for different temp ({})".format(problem_name))
+    axes.legend(loc="best")
+    axes.grid()
+    plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/sa.png")
+    plt.show()
+
+    t0 = time()
+    ga = GARunner(problem=problem,
+                         experiment_name="GA_final",
+                         output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final",
+                         seed=SEED,
+                         iteration_list=2 ** np.arange(13),
+                         max_attempts=500,
+                         population_sizes=[200],
+                         mutation_rates=[0.4])
+    ga_run_stats, ga_run_curves = ga.run()
+    t1 = time()
+    result.loc["GA", "run_time"] = t1 - t0
+    result.loc["GA","final_optimum_value"] = ga_run_curves["Fitness"].values[-1]
+    fig, axes = plt.subplots()
+    plt.plot(ga_run_curves["Fitness"].values, label=f"Population Size=200,mutation_rates=0.4")
+
+    axes.set_xlabel("Iterations")
+    plt.xlim(left=0, right=1000)
+    axes.set_ylabel("Fitness Score")
+    axes.set_title("GA - Fitness vs Iterations for different mutate rate ({})".format(problem_name))
+    axes.legend(loc="best")
+    axes.grid()
+    plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/ga.png")
+    plt.show()
+
+    t0 = time()
+    mmc = MIMICRunner(problem=problem,
+                      experiment_name="MIMIC_final",
+                      output_directory=f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final",
+                      seed=SEED,
+                      iteration_list=2 ** np.arange(10),
+                      population_sizes=[300],
+                      max_attempts=500,
+                      keep_percent_list=[0.25],
+                      use_fast_mimic=True)
+    mimic_run_stats, mimic_run_curves = mmc.run()
+    t1 = time()
+    result.loc["MIMIC", "run_time"] = t1 - t0
+    result.loc["MIMIC","final_optimum_value"] = mimic_run_curves["Fitness"].values[-1]
+    fig, axes = plt.subplots()
+    plt.plot(
+        mimic_run_curves[
+            "Fitness"].values, label="Keep %=0.25, population_size=300")
+    axes.set_xlabel("Iterations")
+    axes.set_ylabel("Fitness Score")
+    axes.set_title("MIMIC - Fitness vs Iterations for different keep % ({})".format(problem_name))
+    axes.legend(loc="best")
+    axes.grid()
+    plt.savefig(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/mmc.png")
+    plt.show()
+    result.to_excel(f"/home/ladan/Desktop/Georgia Tech/ML_CS7641/ML_CS7641/Optimization/{problem_name}/final/result.xlsx")
+    print(result)
